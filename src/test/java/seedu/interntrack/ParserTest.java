@@ -37,4 +37,13 @@ public class ParserTest {
         });
         assertEquals("Both company (c/) and role (r/) are required!", exception.getMessage());
     }
+
+    @Test
+    public void parse_invalidDateFormat_throwsException() {
+        String input = "add c/Google r/Intern d/30-11-2023";
+        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
+            Parser.createApplication(input);
+        });
+        assertEquals("Date must be in YYYY-MM-DD format.", exception.getMessage());
+    }
 }
