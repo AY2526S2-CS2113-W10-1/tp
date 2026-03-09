@@ -18,7 +18,9 @@ public class Parser {
      */
     public static Application createApplication(String input) throws InternTrackException {
         String[] parts = input.split(REGEX);
-        String company = null, role = null, contact = null;
+        String company = null;
+        String role = null;
+        String contact = null;
         LocalDate deadline = null;
         for (String part : parts) {
             String trimmed = part.trim();
