@@ -47,10 +47,11 @@ public class Ui {
         System.out.println(" What can I do for you?");
         System.out.println(BORDER);
     }
+
     /**
      * Prints a confirmation message when a new application is added.
      *
-     * @param newApplication The application that was added.
+     * @param newApplication   The application that was added.
      * @param userApplications The current list used to retrieve the total count.
      */
     public static void printAddApplication(Application newApplication, ArrayList<Application> userApplications) {
@@ -60,10 +61,33 @@ public class Ui {
     }
 
     /**
+     * Prints all applications in the current list.
+     *
+     * @param userApplications The current list used to retrieve the total count.
+     */
+    public static void printAllApplications(ArrayList<Application> userApplications) {
+        if (userApplications.isEmpty()) {
+            System.out.println("You have not applied for any roles yet, start applying now!");
+            return;
+        }
+        int applicationCount = userApplications.size();
+        System.out.println("You have applied for " + applicationCount + ((applicationCount > 1) ? " roles" : " role"));
+        for (int i = 0; i < applicationCount; i++) {
+            Application app = userApplications.get(i);
+            String roles = app.getRole();
+            String company = app.getCompany();
+            String status = app.getStatus();
+            String deadline = (app.getDeadline() != null) ? "Apply by " + app.getDeadline().toString() + ". " : "";
+            String contact = (app.getContact() != null) ? "Contact with " + app.getContact() + ". " : "";
+            System.out.println(i + ". " + roles + " at " + company + " is " + status + ". " + deadline + contact);
+        }
+    }
+
+    /**
      * Prints confirmation after editing an application.
      *
      * @param application The updated application.
-     * @param index The index of the application.
+     * @param index       The index of the application.
      */
     public static void printEditApplication(Application application, int index) {
         System.out.println("Nice! I've updated application " + index + ":");
