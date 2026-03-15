@@ -24,12 +24,12 @@ public class InternTrack {
         assert userApplications != null : "userApplications list should not be null during command handling";
         Storage.loadApplications(userApplications);
         Ui.printWelcome();
-        String line = Ui.readCommand();
-        while (!line.equals(BYE_COMMAND)) {
+        String line = "";
+        while (Ui.hasMoreCommands()&&!line.equals(BYE_COMMAND)) {
+            line = Ui.readCommand();
             Ui.printBorder();
             handleCommand(line, userApplications);
             Ui.printBorder();
-            line = Ui.readCommand();
         }
         Ui.printGoodbye();
     }

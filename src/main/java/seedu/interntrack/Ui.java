@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Ui {
     private static final String BORDER = "____________________________________________________________";
     private static final String GOODBYE_MESSAGE = BORDER
-            + " Bye. Hope to see you again soon!\n"
+            + "\nBye. Hope to see you again soon!\n"
             + BORDER;
     private static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Please try again.";
 
@@ -22,6 +22,15 @@ public class Ui {
      */
     public static String readCommand() {
         return scanner.nextLine(); // Used here to return the string
+    }
+
+    /**
+     * Check if there is more user input to read.
+     *
+     * @return true if there is more input, false otherwise.
+     */
+    public static boolean hasMoreCommands() {
+        return scanner.hasNextLine();
     }
 
     /**
