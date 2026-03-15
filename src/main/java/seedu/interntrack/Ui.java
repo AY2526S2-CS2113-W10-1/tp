@@ -7,7 +7,7 @@ import java.util.Scanner;
  * Represents the user interface for handling input and output.
  */
 public class Ui {
-    private static final String BORDER = "____________________________________________________________\n";
+    private static final String BORDER = "____________________________________________________________";
     private static final String GOODBYE_MESSAGE = BORDER
             + " Bye. Hope to see you again soon!\n"
             + BORDER;
@@ -28,14 +28,14 @@ public class Ui {
      * Prints a horizontal border to the console.
      */
     public static void printBorder() {
-        System.out.print(BORDER);
+        System.out.println(BORDER);
     }
 
     /**
      * Prints the goodbye message to the console.
      */
     public static void printGoodbye() {
-        System.out.print(GOODBYE_MESSAGE);
+        System.out.println(GOODBYE_MESSAGE);
     }
 
     /**
@@ -79,7 +79,7 @@ public class Ui {
             String status = app.getStatus();
             String deadline = (app.getDeadline() != null) ? "Apply by " + app.getDeadline().toString() + ". " : "";
             String contact = (app.getContact() != null) ? "Contact with " + app.getContact() + ". " : "";
-            System.out.println(i + ". " + roles + " at " + company + " is " + status + ". " + deadline + contact);
+            System.out.println((i + 1) + ". " + roles + " at " + company + " is " + status + ". " + deadline + contact);
         }
     }
 
