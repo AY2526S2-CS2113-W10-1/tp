@@ -77,9 +77,9 @@ public class Ui {
             String roles = app.getRole();
             String company = app.getCompany();
             String status = app.getStatus();
-            String deadline = (app.getDeadline() != null) ? "Apply by " + app.getDeadline().toString() + ". " : "";
-            String contact = (app.getContact() != null) ? "Contact with " + app.getContact() + ". " : "";
-            System.out.println((i + 1) + ". " + roles + " at " + company + " is " + status + ". " + deadline + contact);
+            String deadline = (app.getDeadline() != null) ? " Apply by " + app.getDeadline().toString() + "." : "";
+            String contact = (app.getContact() != null) ? " Contact with " + app.getContact() + "." : "";
+            System.out.println((i + 1) + ". " + roles + " at " + company + " is " + status + "." + deadline + contact);
         }
     }
 

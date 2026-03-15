@@ -1,11 +1,60 @@
 ____________________________________________________________
-
  Hello! I'm InternTrack
  What can I do for you?
 ____________________________________________________________
-
+____________________________________________________________
+You have not applied for any roles yet, start applying now!
+____________________________________________________________
 ____________________________________________________________
 Got it. I've added this application:
   Shopee - Backend Intern (Deadline: 2023-11-30, Contact: Johns, Status: Pending)
 Now you have 1 applications in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this application:
+  NUS - TA (Contact: Prof X, Status: Pending)
+Now you have 2 applications in the list.
+____________________________________________________________
+____________________________________________________________
+Date must be in YYYY-MM-DD format.
+____________________________________________________________
+____________________________________________________________
+Contact name cannot be empty.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this application:
+  Micron - Embedded (Deadline: 2027-01-01, Status: Pending)
+Now you have 3 applications in the list.
+____________________________________________________________
+____________________________________________________________
+Deadline date cannot be empty.
+____________________________________________________________
+____________________________________________________________
+You have applied for 3 roles
+1. Backend Intern at Shopee is Pending. Apply by 2023-11-30. Contact with Johns.
+2. TA at NUS is Pending. Contact with Prof X.
+3. Embedded at Micron is Pending. Apply by 2027-01-01.
+____________________________________________________________
+____________________________________________________________
+Nice! I've updated application 2:
+  NUS - TA (Contact: Prof X, Status: Applied)
+____________________________________________________________
+____________________________________________________________
+Nice! I've updated application 1:
+  Shopee - Backend Intern (Deadline: 2023-11-30, Contact: Johns, Status: Accepted)
+____________________________________________________________
+____________________________________________________________
+Application index must be a valid number.
+____________________________________________________________
+____________________________________________________________
+Use format: edit INDEX s/NEW_STATUS
+____________________________________________________________
+____________________________________________________________
+Application index is out of range.
+____________________________________________________________
+____________________________________________________________
+You have applied for 3 roles
+1. Backend Intern at Shopee is Accepted. Apply by 2023-11-30. Contact with Johns.
+2. TA at NUS is Applied. Contact with Prof X.
+3. Embedded at Micron is Pending. Apply by 2027-01-01.
 ____________________________________________________________
