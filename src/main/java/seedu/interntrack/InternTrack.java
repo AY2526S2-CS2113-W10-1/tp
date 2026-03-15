@@ -11,7 +11,9 @@ public class InternTrack {
     private static final String ADD_COMMAND = "add";
     private static final String BYE_COMMAND = "bye";
     private static final String EDIT_COMMAND = "edit";
+    private static final String LIST_COMMAND = "list";
     private static final Logger logger = Logger.getLogger("InternTrack");
+
     /**
      * Starts the InternTrack application.
      *
@@ -35,7 +37,7 @@ public class InternTrack {
     /**
      * Dispatches the given command to the appropriate handler.
      *
-     * @param line The raw command string entered by the user.
+     * @param line             The raw command string entered by the user.
      * @param userApplications The current list of applications.
      */
     private static void handleCommand(String line, ArrayList<Application> userApplications) {
@@ -53,6 +55,8 @@ public class InternTrack {
                 Storage.saveApplications(userApplications);
             } else if (line.startsWith(EDIT_COMMAND)) {
                 handleEditCommand(line, userApplications);
+            } else if (line.startsWith(LIST_COMMAND)) {
+                handleListCommand(line, userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
                 Ui.printUnknownCommand();
@@ -64,9 +68,21 @@ public class InternTrack {
     }
 
     /**
+     * Handles the list command by listing all applications.
+     *
+     * @param line             The raw command string entered by the user.
+     * @param userApplications The current list of applications.
+     * @throws InternTrackException If the command format or index is invalid.
+     */
+    private static void handleListCommand(String line, ArrayList<Application> userApplications)
+            throws InternTrackException {
+        Ui.printAllApplications(userApplications);
+    }
+
+    /**
      * Handles the edit command by updating an application's status.
      *
-     * @param line The raw command string entered by the user.
+     * @param line             The raw command string entered by the user.
      * @param userApplications The current list of applications.
      * @throws InternTrackException If the command format or index is invalid.
      */

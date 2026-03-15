@@ -2,14 +2,16 @@ package seedu.interntrack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 
 public class ApplicationListTest {
     @Test
-   public void addApplication_validApplication_sizeIncreases() throws InternTrackException {
+    public void addApplication_validApplication_sizeIncreases() throws InternTrackException {
         ArrayList<Application> testList = new ArrayList<>();
         String testLine = "c/Google r/Intern";
         ApplicationList.addApplications(testList, testLine);
@@ -17,7 +19,7 @@ public class ApplicationListTest {
     }
 
     @Test
-    public void getApplication_validIndex_returnsCorrectApplication() throws InternTrackException{
+    public void getApplication_validIndex_returnsCorrectApplication() throws InternTrackException {
         ArrayList<Application> testList = new ArrayList<>();
         String testLine = "c/Shopee r/Backend Intern d/2023-11-30 ct/Johns ";
         ApplicationList.addApplications(testList, testLine);

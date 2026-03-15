@@ -89,8 +89,9 @@ public class Application {
 
     @Override
     public String toString() {
+        String tempDeadline = (deadline != null) ? "Deadline: " + deadline + ", " : "";
+        String tempContact = (contact != null) ? "Contact: " + contact + ", " : "";
         return company + " - " + role
-                + " (Deadline: " + deadline + ", Contact: " + contact
-                + ", Status: " + status + ")";
+                + " (" + tempDeadline + tempContact + "Status: " + status + ")";
     }
 }
