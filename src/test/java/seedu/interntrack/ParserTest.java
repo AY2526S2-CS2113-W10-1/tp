@@ -46,4 +46,29 @@ public class ParserTest {
         });
         assertEquals("Date must be in YYYY-MM-DD format.", exception.getMessage());
     }
+
+    @Test
+    public void parse_filterCommand_success() throws InternTrackException {
+        String input = "filter s/Applied";
+        String status = Parser.parseFilterStatus(input);
+        assertEquals("Applied", status);
+    }
+
+    @Test
+    public void parse_filterCommandMissingPrefix_throwsException() {
+        String input = "filter Applied";
+        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
+            Parser.parseFilterStatus(input);
+        });
+        assertEquals("Use format: filter s/STATUS", exception.getMessage());
+    }
+
+    @Test
+    public void parse_filterCommandEmptyStatus_throwsException() {
+        String input = "filter s/ ";
+        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
+            Parser.parseFilterStatus(input);
+        });
+        assertEquals("Status cannot be empty.", exception.getMessage());
+    }
 }

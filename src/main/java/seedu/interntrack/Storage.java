@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.LocalDate;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Manages the loading and saving of applications to a local text file.
@@ -16,6 +18,7 @@ public class Storage {
     private static final String FILE_DELIMITER = "|";
     private static final String FILE_DELIMITER_REGEX = "\\|";
     private static final String NULL_STRING = "null";
+    private static final Logger logger = Logger.getLogger("Storage");
 
     /**
      * Loads applications from the local file into the provided list.
@@ -28,10 +31,12 @@ public class Storage {
             // Creates directory if it does not exist
             if (f.getParentFile() != null && !f.getParentFile().exists()) {
                 f.getParentFile().mkdirs();
+                logger.log(Level.INFO, "Created data directory: " + f.getParentFile().getAbsolutePath());
             }
             // Creates file if it does not exist
             if (!f.exists()) {
                 f.createNewFile();
+                logger.log(Level.INFO, "Created new applications file: " + FILE_PATH);
             }
             Scanner s = new Scanner(f);
             while (s.hasNext()) {
@@ -42,6 +47,7 @@ public class Storage {
                 }
             }
         } catch (IOException e) {
+            logger.log(Level.WARNING, "IO error while loading applications: " + e.getMessage());
             System.out.println("File not found: " + e.getMessage());
         }
     }
@@ -85,8 +91,10 @@ public class Storage {
 
             fw.write(sb.toString());
             fw.close();
+            logger.log(Level.INFO, "Successfully saved " + userApplications.size() + " applications to file");
 
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "IO error while saving applications: " + e.getMessage());
             System.out.println("Something went wrong: " + e.getMessage());
         }
     }

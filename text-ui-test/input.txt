@@ -1,1 +1,16 @@
+list
 add c/Shopee r/Backend Intern d/2023-11-30 ct/Johns
+add c/NUS r/TA ct/Prof X
+add r/Hehe r/Backend Intern d/2023-33-11 ct/Johns
+add c/NUS r/TA ct/ d/
+add r/Embedded c/Micron d/2027-01-01
+add c/NUS r/TA d/
+list
+edit 2 s/Applied
+edit 1 s/Accepted
+edit 2xc s/Accepted
+edit 123213
+edit 5 s/Rejected
+list
+filter s/Pending
+filter s/Ghosted
