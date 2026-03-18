@@ -2,41 +2,43 @@
 
 ## Introduction
 
-{Give a product intro}
+InternTrack is a command-line application that helps users track internship applications.
 
 ## Quick Start
 
 {Give steps to get started quickly}
 
 1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `Duke` from [here](http://link.to/duke).
+1. Download the latest version of `InternTrack` from [here](https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0).
 
-## Features 
+## Features
 
-{Give detailed description of each feature}
+Notes about the command format:
+* Words in UPPER_CASE are the parameters to be supplied by the user (e.g., in add c/COMPANY, COMPANY is a parameter).
+* Items in square brackets are optional (e.g., [d/DEADLINE]).
+* Parameters can be in any order (e.g., c/Google r/Intern is the same as r/Intern c/Google).
 
-### Adding a todo: `todo`
-Adds a new item to the list of todo items.
+### 3.1. Add a new internship application: `add`
 
-Format: `todo n/TODO_NAME d/DEADLINE`
+Adds a new internship application to your tracker. This allows you to log the essential details—Company and Role—and optionally record the application deadline immediately so you never miss a closing date.
 
-* The `DEADLINE` can be in a natural language format.
-* The `TODO_NAME` cannot contain punctuation.  
+Format: `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]`
 
-Example of usage: 
+* c/COMPANY: The name of the company (e.g., Google, Meta).
+* r/ROLE: The position applied for (e.g., Software Engineer).
+* d/DEADLINE: (Optional) The closing date for the application or next task.
+    * Format: YYYY-MM-DD
+* ct/CONTACT: (Optional) The HR contact/primary recruiter contact for this application.
 
-`todo n/Write the rest of the User Guide d/next week`
-
-`todo n/Refactor the User Guide to remove passive voice d/13/04/2020`
+Examples:
+* `add c/Google r/Software Engineer`
+    * Adds an application for Google as a Software Engineer with default status Pending.
+* `add c/Shopee r/Backend Intern d/2023-11-30 ct/Johns`
+    * Adds an application with a specific deadline and through Johns.
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
-
-**A**: {your answer here}
 
 ## Command Summary
 
-{Give a 'cheat sheet' of commands here}
-
-* Add todo `todo n/TODO_NAME d/DEADLINE`
+* Add internship application: `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]`
