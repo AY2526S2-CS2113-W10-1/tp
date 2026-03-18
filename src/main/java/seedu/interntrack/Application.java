@@ -84,7 +84,12 @@ public class Application {
      * @param status The new status value.
      */
     public void setStatus(String status) {
-        this.status = status;
+        if (status == null || status.trim().isEmpty()) {
+            throw new IllegalArgumentException("Status cannot be null or empty.");
+        }
+
+        this.status = status.trim();
+        assert !this.status.isBlank() : "Application status should not be blank after setting";
     }
 
     @Override

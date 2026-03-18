@@ -28,24 +28,27 @@ public class Storage {
     public static void loadApplications(ArrayList<Application> userApplications) {
         try {
             File f = new File(FILE_PATH);
-            // Creates directory if it does not exist
+
             if (f.getParentFile() != null && !f.getParentFile().exists()) {
                 f.getParentFile().mkdirs();
                 logger.log(Level.INFO, "Created data directory: " + f.getParentFile().getAbsolutePath());
             }
-            // Creates file if it does not exist
+
             if (!f.exists()) {
                 f.createNewFile();
                 logger.log(Level.INFO, "Created new applications file: " + FILE_PATH);
             }
-            Scanner s = new Scanner(f);
-            while (s.hasNext()) {
-                String line = s.nextLine();
-                Application t = parseFileString(line);
-                if (t != null) {
-                    userApplications.add(t);
+
+            try (Scanner s = new Scanner(f)) {
+                while (s.hasNextLine()) {
+                    String line = s.nextLine();
+                    Application application = parseFileString(line);
+                    if (application != null) {
+                        userApplications.add(application);
+                    }
                 }
             }
+
         } catch (IOException e) {
             logger.log(Level.WARNING, "IO error while loading applications: " + e.getMessage());
             System.out.println("File not found: " + e.getMessage());
@@ -56,22 +59,41 @@ public class Storage {
      * Parses a single line from the data file into an Application object.
      *
      * @param line The string representing an application.
-     * @return The reconstructed Application object.
+     * @return The reconstructed Application object, or null if the line is invalid.
      */
     private static Application parseFileString(String line) {
-        String[] parts = line.split(FILE_DELIMITER_REGEX);
-        String company = parts[0];
-        String role = parts[1];
-        LocalDate deadline = null;
-        if (!parts[2].equals(NULL_STRING) && !parts[2].isEmpty()) {
-            deadline = LocalDate.parse(parts[2]);
+        assert line != null : "Stored application line should not be null";
+
+        String[] parts = line.split(FILE_DELIMITER_REGEX, -1);
+
+        if (parts.length != 5) {
+            logger.log(Level.WARNING, "Skipping malformed application record: " + line);
+            return null;
         }
-        String contact = (parts[3].equals(NULL_STRING)) ? null : parts[3];
-        String status = parts[4];
-        Application app = new Application(company, role, deadline, contact);
-        // Preserve the stored status instead of always defaulting to "Pending"
-        app.setStatus(status);
-        return app;
+
+        try {
+            String company = parts[0];
+            String role = parts[1];
+
+            LocalDate deadline = null;
+            if (!parts[2].equals(NULL_STRING) && !parts[2].isEmpty()) {
+                deadline = LocalDate.parse(parts[2]);
+            }
+
+            String contact = (parts[3].equals(NULL_STRING)) ? null : parts[3];
+            String status = parts[4];
+
+            Application app = new Application(company, role, deadline, contact);
+            app.setStatus(status);
+
+            assert app.getStatus() != null && !app.getStatus().isBlank()
+                    : "Loaded application status should not be blank";
+
+            return app;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Skipping invalid application record: " + line, e);
+            return null;
+        }
     }
 
     /**

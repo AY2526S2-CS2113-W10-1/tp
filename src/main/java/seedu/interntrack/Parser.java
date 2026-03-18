@@ -81,15 +81,21 @@ public class Parser {
      * @throws InternTrackException If the index is missing or invalid.
      */
     public static int parseEditIndex(String input) throws InternTrackException {
+        assert input != null : "Edit command input should not be null";
+
         String[] parts = input.trim().split("\\s+", 3);
 
         if (parts.length < 3) {
+            logger.warning("Invalid edit command format: missing index or status");
             throw new InternTrackException(EDIT_FORMAT_ERROR);
         }
 
         try {
-            return Integer.parseInt(parts[1]);
+            int index = Integer.parseInt(parts[1]);
+            assert index > 0 : "Application index should be positive";
+            return index;
         } catch (NumberFormatException e) {
+            logger.warning("Invalid application index in edit command: " + parts[1]);
             throw new InternTrackException("Application index must be a valid number.");
         }
     }
@@ -102,18 +108,23 @@ public class Parser {
      * @throws InternTrackException If the status is missing.
      */
     public static String parseEditStatus(String input) throws InternTrackException {
+        assert input != null : "Edit command input should not be null";
+
         String[] parts = input.trim().split("\\s+", 3);
 
         if (parts.length < 3 || !parts[2].startsWith(STATUS_PREFIX)) {
+            logger.warning("Invalid edit command format: missing status prefix");
             throw new InternTrackException(EDIT_FORMAT_ERROR);
         }
 
         String status = parts[2].substring(STATUS_PREFIX.length()).trim();
 
         if (status.isEmpty()) {
+            logger.warning("Empty status provided in edit command");
             throw new InternTrackException("Status cannot be empty.");
         }
 
+        assert !status.isBlank() : "Parsed status should not be blank";
         return status;
     }
 

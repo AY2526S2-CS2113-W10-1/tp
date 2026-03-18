@@ -29,6 +29,7 @@ public class ApplicationList {
         logger.log(Level.INFO, "Added new application to list. Total applications: " + userApplications.size());
         return newApplication;
     }
+
     /**
      * Edits the status of an existing application.
      *
@@ -41,11 +42,25 @@ public class ApplicationList {
     public static Application editApplicationStatus(ArrayList<Application> userApplications,
                                                     int index, String status) throws InternTrackException {
         if (index < 1 || index > userApplications.size()) {
+            logger.warning("Edit failed: application index out of range: " + index);
             throw new InternTrackException("Application index is out of range.");
         }
 
+        if (status == null || status.trim().isEmpty()) {
+            logger.warning("Edit failed: status cannot be null or empty");
+            throw new InternTrackException("Status cannot be empty.");
+        }
+
         Application application = userApplications.get(index - 1);
+        assert application != null : "Application to edit should not be null";
+
+        String oldStatus = application.getStatus();
+        logger.info("Updating application at index " + index
+                + " from status '" + oldStatus + "' to '" + status + "'");
+
         application.setStatus(status);
+
+        assert application.getStatus().equals(status) : "Application status should be updated correctly";
         return application;
     }
 
