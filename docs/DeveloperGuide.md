@@ -17,7 +17,203 @@ Java standard libraries such as `java.util`, `java.io`, and `java.time` were use
 
 ## Design & implementation
 
-{Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
+### Architecture
+
+The architecture of InternTrack follows a layered design pattern with the following main components:
+
+- UI (Ui): Handles user input and output via the command-line interface
+- Logic (Parser, InternTrack): Processes user commands and orchestrates the application flow
+- Model (Application, ApplicationList): Maintains the in-memory data structure for applications
+- Storage (Storage): Manages persistence of application data to disk
+
+The sequence of interaction follows a clear flow: User input → UI → Logic (Parser) → Model manipulation → Storage persistence.
+
+
+#### Application Initialization: Loading Persisted Data
+
+Before any user interaction occurs, the application must load previously saved data from disk. This initialization step is critical for demonstrating how the storage mechanism works bidirectionally (save and load).
+
+When `InternTrack.main()` is invoked at startup:
+
+1. An empty `userApplications` ArrayList is created in memory
+2. Immediately, `Storage.loadApplications(userApplications)` is called
+3. This method checks if the data directory (`./data/`) and file (`./data/applications.txt`) exist
+4. If either is missing, they are created automatically (graceful initialization)
+5. The file is read line by line; each line is passed to `Storage.parseFileString()`
+6. `parseFileString()` deserializes the pipe-delimited format back into `Application` objects
+7. Each deserialized `Application` is added to the in-memory `userApplications` list
+
+By the time the user sees the welcome prompt, all previously saved applications are already in memory. This design ensures:
+- No data loss — All previous applications are restored at startup
+- Consistency — The in-memory state matches the on-disk state at launch
+- Error resilience — Malformed lines are logged and skipped rather than crashing the app
+
+### Implementation of Add Feature
+
+The add command follows a 5-step pipeline:
+
+1. Parsing — User input is tokenized and validated
+2. Object Creation — A new `Application` entity is instantiated with default status
+3. Model Update — The application is added to the in-memory list
+4. Storage Persistence — The updated model is serialized to disk
+5. User Feedback — Confirmation is displayed to the user
+
+#### Detailed Walkthrough of Add Command
+
+**Step 1: Parsing User Input**
+
+When a user enters `add c/Google r/Software Engineer d/2024-03-31 ct/John Doe`, the input is received by `Ui.readCommand()` and passed to `InternTrack.handleCommand()`. This method inspects the command prefix and dispatches to `handleAddCommand()`.
+
+The `Parser.createApplication()` method processes the raw input string:
+- Uses a regex split pattern `(?=c/|r/|ct/|d/)` to tokenize by command prefixes
+- Extracts mandatory fields: `c/` (Company) and `r/` (Role)
+- Extracts optional fields: `d/` (Deadline in YYYY-MM-DD format) and `ct/` (Contact)
+- Validates that mandatory fields are non-empty; if missing or empty, throws `InternTrackException`
+- If a deadline is provided, parses it using `LocalDate.parse()`; invalid dates trigger an exception
+
+**Step 2: Object Creation and Default Initialization**
+
+Once parsing is successful, `Parser.createApplication()` instantiates a new `Application` object with the extracted data. Critically, the `Application` constructor automatically assigns a default status of "Pending" to all newly created applications. This ensures every new application has a well-defined initial state.
+
+**Step 3: Model Update**
+
+The newly created `Application` object is returned to `ApplicationList.addApplications()`, which performs final validation:
+- Adds the application to the internal `userApplications` ArrayList
+- Returns the newly added `Application`
+
+**Step 4: Storage Persistence**
+
+Immediately after the successful model update, `InternTrack.handleAddCommand()` calls `Storage.saveApplications(userApplications)` to persist the updated list to disk. This ensures in-memory and on-disk states remain synchronized.
+
+The `Storage.saveApplications()` method:
+1. Opens a `FileWriter` to `./data/applications.txt`
+2. Iterates through all applications in the list
+3. Converts each `Application` to a pipe-delimited string: `company|role|deadline|contact|status`
+4. Writes all serialized applications to disk in a single operation
+5. Null fields are represented as the string "null"
+
+**Step 5: User Feedback**
+
+Finally, `Ui.printAddApplication()` displays a confirmation message showing the added application details and the updated total count.
+
+#### Sequence Diagram illustrating the 5 steps above
+
+![add_sequence_diag.png](diagrams/add_sequence_diag.png)
+
+### Design Considerations
+
+#### Aspect 1: Where the Application Object is Instantiated
+
+**Alternative 1 (Current Choice):** Instantiate the complete `Application` object inside the `Parser.createApplication()` method, which is called by `ApplicationList.addApplications()`.
+
+*Pros:*
+- Parsing logic is centralized and reusable across commands
+- `ApplicationList` is insulated from parsing concerns; it only knows about domain objects
+- Clear separation of concerns between input parsing and model management
+- Validation happens at a single point, reducing the risk of inconsistency
+
+*Cons:*
+- Parser is tightly coupled to the `Application` class structure
+- Changes to the `Application` constructor signature require updating the parser
+- If multiple ways to create `Application` objects are needed, code duplication may occur
+
+**Alternative 2:** Pass raw, validated strings directly to `ApplicationList.addApplications()` and allow it to instantiate the `Application` object during the add operation.
+
+*Pros:*
+- Reduces coupling between the parser and the `Application` model
+- `ApplicationList` has more control and flexibility over object instantiation
+- Easier to support alternative `Application` creation paths
+
+*Cons:*
+- Violates the Single Responsibility Principle by mixing input parsing with model logic
+- Duplicates validation logic if applications are created in multiple places
+- Makes testing harder because the model layer must now understand input syntax
+- Reduced code reusability across commands that need to create applications
+
+**Rationale for Current Choice:** Centralizing instantiation in the parser improves testability and maintainability. Each component has a clear responsibility: the parser handles user input syntax, and the model layer handles data integrity.
+
+---
+
+#### Aspect 2: When to Persist Data to Storage
+
+**Alternative 1 (Current Choice):** Auto-save to `Storage` immediately after every successful command that modifies the model (add, edit, delete).
+
+*Pros:*
+- Prevents data loss if the application crashes or is forcefully terminated
+- Guarantees consistency between the in-memory model and on-disk state
+- Simplifies error handling: if the save fails, the entire operation can be considered incomplete and rolled back
+- Users never lose work; changes are persisted immediately
+
+*Cons:*
+- Increased disk I/O operations may cause slight performance overhead
+- Inefficient for batch operations (multiple adds followed by a save would write to disk multiple times)
+- Disk write latency could delay user feedback
+
+**Alternative 2:** Only save to `Storage` when the user issues an explicit `save` command or when the application exits normally.
+
+*Pros:*
+- Better performance: disk writes are minimized and can be batched
+- More predictable timing—saves only happen at user-defined points
+- Aligns with traditional desktop application workflows (e.g., spreadsheets require explicit saves)
+
+*Cons:*
+- **High risk of data loss** if the application is force-closed without an explicit save
+- User must remember to save, placing responsibility on the user
+- No guarantee of data consistency throughout a session
+- Less suitable for tasks that users perform casually or repetitively
+
+Rationale for Current Choice: For an internship application tracker, data loss is unacceptable. Immediate persistence ensures that every application a user enters is permanently saved. While this incurs a small performance cost, the safety guarantee is worth the trade-off given the application's domain.
+
+---
+
+#### Aspect 3: File Format for Persistent Storage
+
+**Alternative 1 (Current Choice):** Store applications in a plain-text file using a pipe-delimiter (`|`) format.
+
+*Pros:*
+- Human-readable and easily debuggable—users can directly examine and understand the file contents
+- No external library dependencies required
+- Simple parsing and serialization logic
+- Fast I/O performance for small to medium datasets
+- Minimal file size overhead compared to structured formats
+
+*Cons:*
+- Not scalable if nested or complex data structures are added later
+- If the delimiter character (`|`) appears in data fields, it must be escaped, complicating both serialization and deserialization
+- Limited support for special characters; encoding issues may arise
+- Fragile: manual edits to the file can easily corrupt the data format
+
+**Alternative 2:** Store applications in JSON format.
+
+*Pros:*
+- Structured, widely supported format with standardized specifications
+- Self-documenting: field names are included in the serialized data
+- Easy to extend with new fields without breaking existing parsers
+- Better handling of special characters, escape sequences, and nested objects
+- Widely available libraries simplify parsing and serialization
+
+*Cons:*
+- Requires an external JSON library dependency (e.g., `gson`, `jackson`)
+- Slightly slower parsing and serialization compared to plain text
+- Larger file size due to formatting overhead and field name repetition
+- Overkill for a simple, flat data structure like applications
+
+**Alternative 3:** Use a database.
+
+*Pros:*
+- Supports complex queries, indexing, and relationships between entities
+- Built-in data validation and type constraints
+- Superior performance for large datasets (thousands of records)
+- Allows for concurrent access and advanced features like transactions
+
+*Cons:*
+- Adds significant complexity and database library dependencies
+- Overkill for a CLI application managing a small number of applications
+- Harder to understand and debug compared to file-based approaches
+- Requires knowledge of SQL and database administration
+- Heavier resource footprint
+
+**Rationale for Current Choice:** The plain-text pipe-delimited format is appropriate for an early-stage student project. It provides a good balance between simplicity, readability, and performance. If future requirements demand support for complex nested data or significantly larger datasets, migrating to JSON or a database would be straightforward.
 
 ## Product scope
 

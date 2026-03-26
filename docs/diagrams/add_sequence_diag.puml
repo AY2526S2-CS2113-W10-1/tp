@@ -1,0 +1,44 @@
+@startuml
+hide footbox
+
+participant ":InternTrack" as InternTrack
+participant ":ApplicationList" as ApplicationList
+participant ":Parser" as Parser
+participant ":Ui" as Ui
+participant ":Storage" as Storage
+
+[-> InternTrack : handleAddCommand(line, userApplications)
+activate InternTrack
+
+InternTrack -> ApplicationList : addApplications(userApplications, line)
+activate ApplicationList
+
+ApplicationList -> Parser : createApplication(line)
+activate Parser
+
+create "newApplication:Application" as Application
+Parser -> Application : Application(company, role, deadline, contact)
+activate Application
+Application --> Parser ::Application
+deactivate Application
+
+Parser --> ApplicationList : :Application
+deactivate Parser
+
+ApplicationList --> InternTrack : newApplication:Application
+deactivate ApplicationList
+
+InternTrack -> Ui : printAddApplication(newApplication, userApplications)
+activate Ui
+Ui --> InternTrack
+deactivate Ui
+
+InternTrack -> Storage : saveApplications(userApplications)
+activate Storage
+Storage --> InternTrack
+deactivate Storage
+
+[<-- InternTrack
+deactivate InternTrack
+
+@enduml
