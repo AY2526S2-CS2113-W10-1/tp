@@ -2,104 +2,309 @@
 
 ## Introduction
 
-InternTrack is a command-line application that helps users track internship applications.
+InternTrack is a command-line application that helps users track their internship applications efficiently. It allows users to record application details, update statuses, and organize applications using filtering and sorting commands.
+
+InternTrack is designed for students who prefer fast keyboard-based workflows.
+
+---
 
 ## Quick Start
 
-{Give steps to get started quickly}
+1. Ensure that you have **Java 17 or above** installed.
+2. Download the latest version of `InternTrack` from  
+   https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0
+3. Open a terminal in the folder containing the jar file.
+4. Run the application using:
 
-1. Ensure that you have Java 17 or above installed.
-1. Download the latest version of `InternTrack` from [here](https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0).
+```
+java -jar InternTrack.jar
+```
+
+5. Type commands into the terminal and press Enter to execute them.
+
+---
 
 ## Features
 
-Notes about the command format:
-* Words in UPPER_CASE are the parameters to be supplied by the user (e.g., in add c/COMPANY, COMPANY is a parameter).
-* Items in square brackets are optional (e.g., [d/DEADLINE]).
-* Parameters can be in any order (e.g., c/Google r/Intern is the same as r/Intern c/Google).
+### Notes about the command format
 
-### 1. Add a new internship application: `add`
+* Words in **UPPER_CASE** are parameters to be supplied by the user. Example: `add c/COMPANY` where COMPANY is replaced by the user.
+* Items in **square brackets** are optional. Example: `[d/DEADLINE]`
+* Parameters can be given in **any order**. Example: `add c/Google r/Intern` is the same as `add r/Intern c/Google`.
 
-Adds a new internship application to your tracker. This allows you to log the essential details—Company and Role—and optionally record the application deadline immediately so you never miss a closing date.
+---
 
-Format: `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]`
+# Commands
 
-* c/COMPANY: The name of the company (e.g., Google, Meta).
-* r/ROLE: The position applied for (e.g., Software Engineer).
-* d/DEADLINE: (Optional) The closing date for the application or next task.
-  * Format: YYYY-MM-DD
-* ct/CONTACT: (Optional) The HR contact/primary recruiter contact for this application.
+---
 
-Examples:
-* `add c/Google r/Software Engineer`
-  * Adds an application for Google as a Software Engineer with default status Pending.
-* `add c/Shopee r/Backend Intern d/2023-11-30 ct/Johns`
-  * Adds an application with a specific deadline and through Johns.
+## 1. Add a new internship application: `add`
 
-### 2. List all applications: `list`
+Adds a new internship application to your tracker.
 
-List all applications in the tracker, it will result in every info of the application you have made so far.
+Format
 
-Format: `list`
+```
+add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]
+```
 
-Examples:
-* `list`
-  * You have 3 applications in your tracker. The first one is Backend Intern at Shopee with Accepted status. Apply by 2023-11-30. Contact with Johns.
+Parameters
 
-### 3. Edit an application: `edit`
+- `c/COMPANY` : Name of the company
+- `r/ROLE` : Role applied for
+- `d/DEADLINE` : Optional application deadline
+- `ct/CONTACT` : Optional recruiter or HR contact
 
-Edit an application status in the tracker
+Deadline format
 
-Format: `edit INDEX s/NEW_STATUS`
+```
+YYYY-MM-DD
+```
 
-* INDEX: Index of the application in the tracker.
-* s/NEW_STATUS: The new status for the application.
+Examples
 
-Examples:
-* `edit 2 s/Accepted`
-  * You have changed the application with index 2 in the tracker to Accepted
+```
+add c/Google r/Software Engineer
+```
 
-### 4. Delete an application: `delete`
+Adds an application with status **Pending**.
 
-Delete an application in the tracker
+```
+add c/Shopee r/Backend Intern d/2023-11-30 ct/John
+```
 
-Format: `delete INDEX `
+Adds an application with a deadline and contact.
 
-* INDEX: Index of the application in the tracker.
+---
 
-Examples:
-* `delete 2`
-  * You have deleted the application with index 2 in the tracker to Accepted
+## 2. List all applications: `list`
 
-### 5. Filter the tracker: `filter`
+Displays all applications currently stored in the tracker.
 
-Filter all application that has the same status 
+Format
 
-Format: `filter s/STATUS `
+```
+list
+```
 
-* s/FILTER_STATUS: The status you are interested in.
+Example
 
-Examples:
-* `filter s/Pending`
-  * There are 2 applications in the tracker that has Pending status.
+```
+list
+```
 
-### 6. Sort the tracker: `sort`
+Example output
 
-Sort all application with some criteria. Default is ascending lexigraphically.
+```
+You have applied for 3 roles
+1. Backend Intern at Shopee is Accepted. Apply by 2023-11-30. Contact with John.
+2. SWE Intern at Google is Pending.
+3. ML Intern at Meta is Pending.
+```
 
-Format: `filter by/CRITERIA [DESC] [NONNULL] `
+---
 
-* by/CRITERIA: The criteria you want to sort, supported ROLE, COMPANY, DEADLINE, CONTACT, STATUS.
-* DESC: Optional flag to set it as descending lexigraphically
-* NONNULL: Optional flag to remove null entry for the criteria that we are interested in
+## 3. Edit an application status: `edit`
 
-Examples:
-* `filter s/Pending`
-  * There are 2 applications in the tracker that has Pending status.
+Updates the status of an existing application.
 
-## FAQ
+Format
 
+```
+edit INDEX s/STATUS
+```
 
-## Command Summary
+Parameters
 
-* Add internship application: `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]`
+- `INDEX` : Index of the application shown in the list
+- `s/STATUS` : New status value
+
+Example
+
+```
+edit 2 s/Accepted
+```
+
+Result
+
+```
+Nice! I've updated application 2.
+```
+
+---
+
+## 4. Delete an application: `delete`
+
+Removes an application from the tracker.
+
+Format
+
+```
+delete INDEX
+```
+
+Parameters
+
+- `INDEX` : Index of the application in the list
+
+Example
+
+```
+delete 2
+```
+
+Result
+
+```
+Noted. I've removed this application.
+```
+
+---
+
+## 5. Filter applications by status: `filter`
+
+Shows applications that match a specific status.
+
+Format
+
+```
+filter s/STATUS
+```
+
+Example
+
+```
+filter s/Pending
+```
+
+Result
+
+```
+There are 2 applications with Pending status.
+```
+
+---
+
+## 6. Sort applications: `sort`
+
+Sorts applications based on specified criteria.
+
+Format
+
+```
+sort by/CRITERIA [DESC] [NONNULL]
+```
+
+Parameters
+
+- `by/CRITERIA` : Sorting field
+
+Supported values
+
+```
+ROLE
+COMPANY
+DEADLINE
+CONTACT
+STATUS
+```
+
+Optional flags
+
+- `DESC` : Sort in descending order
+- `NONNULL` : Exclude entries where the chosen field is null
+
+Examples
+
+```
+sort by/COMPANY
+```
+
+Sort applications alphabetically by company.
+
+```
+sort by/DEADLINE DESC
+```
+
+Sort applications by deadline in descending order.
+
+---
+
+## 7. Undo the most recent change: `undo`
+
+Reverts the most recent modifying command.
+
+Supported commands
+
+- `add`
+- `edit`
+- `delete`
+
+Format
+
+```
+undo
+```
+
+Example
+
+```
+undo
+```
+
+Result
+
+```
+Done. I've undone the most recent change.
+```
+
+If there is nothing to undo, InternTrack will show an error message.
+
+---
+
+## 8. Exit the application: `bye`
+
+Closes InternTrack.
+
+Format
+
+```
+bye
+```
+
+Example
+
+```
+bye
+```
+
+Result
+
+```
+Bye. Hope to see you again soon!
+```
+
+---
+
+# FAQ
+
+**Q: Can I undo multiple actions?**  
+Yes. InternTrack keeps a history of previous states, so multiple undo commands can be used sequentially.
+
+**Q: What happens if I undo after restarting the program?**  
+Undo history is cleared when the application restarts.
+
+---
+
+# Command Summary
+
+| Command | Format |
+|--------|-------|
+| Add | `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]` |
+| List | `list` |
+| Edit | `edit INDEX s/STATUS` |
+| Delete | `delete INDEX` |
+| Filter | `filter s/STATUS` |
+| Sort | `sort by/CRITERIA [DESC] [NONNULL]` |
+| Undo | `undo` |
+| Exit | `bye` |

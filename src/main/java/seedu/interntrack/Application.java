@@ -30,7 +30,20 @@ public class Application {
         this.contact = contact;
         this.status = DEFAULT_STATUS;
         // Assertion to verify default status postcondition
-        assert this.status.equals("Pending") : "New applications must start with Pending status";
+        assert this.status.equals(DEFAULT_STATUS) : "New applications must start with Pending status";
+    }
+
+    /**
+     * Initialises a copy of the specified application.
+     *
+     * @param other The application to copy.
+     */
+    public Application(Application other) {
+        this.company = other.company;
+        this.role = other.role;
+        this.deadline = other.deadline;
+        this.contact = other.contact;
+        this.status = other.status;
     }
 
     /**

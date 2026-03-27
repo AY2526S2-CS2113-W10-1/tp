@@ -13,7 +13,7 @@ public class Ui {
             + BORDER;
     private static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Please try again.";
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
     /**
      * Reads a line of user input from the console.
@@ -21,11 +21,11 @@ public class Ui {
      * @return The user input as a string.
      */
     public static String readCommand() {
-        return scanner.nextLine(); // Used here to return the string
+        return scanner.nextLine();
     }
 
     /**
-     * Check if there is more user input to read.
+     * Checks if there is more user input to read.
      *
      * @return true if there is more input, false otherwise.
      */
@@ -70,25 +70,31 @@ public class Ui {
     }
 
     /**
-     * Prints all applications in the current list.
+     * Prints a single application entry.
      *
-     * @param userApplications The current list used to retrieve the total count.
+     * @param app The application to print.
+     * @param index The zero-based index of the application in the list.
      */
     private static void printApplication(Application app, int index) {
-        String roles = app.getRole();
+        String role = app.getRole();
         String company = app.getCompany();
         String status = app.getStatus();
         assert company != null && !company.isEmpty() :
                 "Existing application must have company";
-        assert roles != null && !roles.isEmpty() :
+        assert role != null && !role.isEmpty() :
                 "Existing application must have role";
         assert status != null :
                 "Existing application must have status";
         String deadline = (app.getDeadline() != null) ? " Apply by " + app.getDeadline().toString() + "." : "";
         String contact = (app.getContact() != null) ? " Contact with " + app.getContact() + "." : "";
-        System.out.println((index + 1) + ". " + roles + " at " + company + " is " + status + "." + deadline + contact);
+        System.out.println((index + 1) + ". " + role + " at " + company + " is " + status + "." + deadline + contact);
     }
 
+    /**
+     * Prints all applications in the current list.
+     *
+     * @param userApplications The current list used to retrieve the total count.
+     */
     public static void printAllApplications(ArrayList<Application> userApplications) {
         assert userApplications != null : "Application list should not be null";
         if (userApplications.isEmpty()) {
@@ -182,6 +188,13 @@ public class Ui {
     public static void printDeleteApplication(Application application, int index) {
         System.out.println("Noted. I've removed this application:");
         System.out.println("  " + (index + 1) + ". " + application.toString());
+    }
+
+    /**
+     * Prints confirmation after undoing the most recent modifying command.
+     */
+    public static void printUndoSuccess() {
+        System.out.println("Done. I've undone the most recent change.");
     }
 
     /**

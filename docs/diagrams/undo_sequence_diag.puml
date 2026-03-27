@@ -1,0 +1,14 @@
+@startuml
+actor User
+participant Ui
+participant InternTrack
+participant ApplicationList
+participant Storage
+
+User -> Ui : undo
+Ui -> InternTrack : handleUndoCommand()
+InternTrack -> ApplicationList : restorePreviousState()
+InternTrack -> Storage : saveApplications()
+InternTrack -> Ui : printUndoSuccess()
+
+@enduml
