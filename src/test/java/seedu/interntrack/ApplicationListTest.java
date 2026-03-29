@@ -133,4 +133,114 @@ public class ApplicationListTest {
         assertEquals(1, filteredApplications.size());
         assertEquals("Applied", filteredApplications.get(0).getStatus());
     }
+
+    @Test
+    public void sortApplication_invalidCriteria_throwsException() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String[] testCriteria = {"WEIRDCRITERIA", "DESC", "NONNULL"};
+        InternTrackException exception = assertThrows(
+                InternTrackException.class,
+                () -> ApplicationList.sortApplicationsByCriteria(testList, testCriteria)
+        );
+        assertEquals("Wrong sorting criteria, please try again", exception.getMessage());
+    }
+
+    @Test
+    public void sortApplication_deadlineCriteria_correctSize() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String testLine = "c/NUS r/TA ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Embedded d/2027-01-01";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/ShopBack r/SE d/2025-11-11 ct/Harim";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/NVIDIA r/HE d/2026-03-27 ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Shopee r/Sales d/2030-10-23 ct/Prof Y";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Marketing d/2026-03-27 ct/Limux";
+        ApplicationList.addApplications(testList, testLine);
+        String[] testCriteria = {"DEADLINE", "DESC", "NONNULL"};
+        ArrayList<Application> sortedList = ApplicationList.sortApplicationsByCriteria(testList, testCriteria);
+        assertEquals(5, sortedList.size());
+    }
+
+    @Test
+    public void sortApplication_contactCriteria_correctSize() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String testLine = "c/NUS r/TA ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Embedded d/2027-01-01";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/ShopBack r/SE d/2025-11-11 ct/Harim";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/NVIDIA r/HE d/2026-03-27 ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Shopee r/Sales d/2030-10-23 ct/Prof Y";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Marketing d/2026-03-27 ct/Limux";
+        ApplicationList.addApplications(testList, testLine);
+        String[] testCriteria = {"CONTACT", "DESC", "NONNULL"};
+        ArrayList<Application> sortedList = ApplicationList.sortApplicationsByCriteria(testList, testCriteria);
+        assertEquals(5, sortedList.size());
+    }
+
+    @Test
+    public void sortApplication_contactCriteria_correctFirst() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String testLine = "c/NUS r/TA ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Embedded d/2027-01-01";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/ShopBack r/SE d/2025-11-11 ct/Harim";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/NVIDIA r/HE d/2026-03-27 ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Shopee r/Sales d/2030-10-23 ct/Prof Y";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Marketing d/2026-03-27 ct/Limux";
+        ApplicationList.addApplications(testList, testLine);
+        String[] testCriteria = {"CONTACT", "DESC", "NONNULL"};
+        ArrayList<Application> sortedList = ApplicationList.sortApplicationsByCriteria(testList, testCriteria);
+        assertEquals("Shopee", sortedList.get(0).getCompany());
+    }
+    @Test
+    public void sortApplication_roleCriteria_correctFirst() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String testLine = "c/NUS r/TA ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Embedded d/2027-01-01";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/ShopBack r/SE d/2025-11-11 ct/Harim";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/NVIDIA r/HE d/2026-03-27 ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Shopee r/Sales d/2030-10-23 ct/Prof Y";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Marketing d/2026-03-27 ct/Limux";
+        ApplicationList.addApplications(testList, testLine);
+        String[] testCriteria = {"ROLE", "DESC"};
+        ArrayList<Application> sortedList = ApplicationList.sortApplicationsByCriteria(testList, testCriteria);
+        assertEquals("TA", sortedList.get(0).getRole());
+    }
+
+    @Test
+    public void sortApplication_companyCriteria_correctSecond() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        String testLine = "c/NUS r/TA ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Embedded d/2027-01-01";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/ShopBack r/SE d/2025-11-11 ct/Harim";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/NVIDIA r/HE d/2026-03-27 ct/Prof X";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Shopee r/Sales d/2030-10-23 ct/Prof Y";
+        ApplicationList.addApplications(testList, testLine);
+        testLine = "c/Micron r/Marketing d/2026-03-27 ct/Limux";
+        ApplicationList.addApplications(testList, testLine);
+        String[] testCriteria = {"COMPANY", "DESC"};
+        ArrayList<Application> sortedList = ApplicationList.sortApplicationsByCriteria(testList, testCriteria);
+        assertEquals("ShopBack", sortedList.get(1).getCompany());
+    }
 }
