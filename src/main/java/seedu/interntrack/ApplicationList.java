@@ -2,8 +2,8 @@ package seedu.interntrack;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the list of internship applications.
@@ -15,7 +15,7 @@ public class ApplicationList {
      * Adds a new application parsed from the given input line to the list.
      *
      * @param userApplications The list to add the application to.
-     * @param line             The raw input string containing application details.
+     * @param line The raw input string containing application details.
      * @return The newly created Application object.
      * @throws InternTrackException If the input is missing required fields or has an invalid date.
      */
@@ -86,6 +86,7 @@ public class ApplicationList {
                 + ". Matches: " + filteredApplications.size());
         return filteredApplications;
     }
+
     /**
      * Filters applications that have a deadline on or before the specified date.
      * Iterates through the provided list and collects applications where the
@@ -96,11 +97,11 @@ public class ApplicationList {
      * @return A list of applications matching the date criteria.
      */
     public static ArrayList<Application> filterApplicationsOnOrBefore(ArrayList<Application> userApplications,
-                                                                    LocalDate deadline) {
+                                                                      LocalDate deadline) {
         ArrayList<Application> filteredApplications = new ArrayList<>();
         for (Application application : userApplications) {
             LocalDate applicationDeadline = application.getDeadline();
-            if (applicationDeadline != null && !applicationDeadline.isAfter(deadline)){
+            if (applicationDeadline != null && !applicationDeadline.isAfter(deadline)) {
                 filteredApplications.add(application);
             }
         }

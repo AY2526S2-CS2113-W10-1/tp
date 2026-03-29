@@ -13,15 +13,15 @@ public class Application {
     private LocalDate deadline;
     private String contact;
     private String status;
-
+    
     /**
      * Initialises a new application with the specified details.
      * The status is set to "Pending" by default.
      *
-     * @param company  Name of the company.
-     * @param role     Job role being applied for.
+     * @param company Name of the company.
+     * @param role Job role being applied for.
      * @param deadline Date of the application deadline.
-     * @param contact  Contact details provided.
+     * @param contact Contact details provided.
      */
     public Application(String company, String role, LocalDate deadline, String contact) {
         this.company = company;

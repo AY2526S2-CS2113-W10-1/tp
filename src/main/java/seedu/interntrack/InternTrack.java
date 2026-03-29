@@ -3,8 +3,8 @@ package seedu.interntrack;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Serves as the main entry point and command handler for InternTrack.
@@ -46,7 +46,7 @@ public class InternTrack {
     /**
      * Dispatches the given command to the appropriate handler.
      *
-     * @param line             The raw command string entered by the user.
+     * @param line The raw command string entered by the user.
      * @param userApplications The current list of applications.
      * @param undoHistory The stack storing previous application list states for undo.
      */
@@ -241,7 +241,7 @@ public class InternTrack {
      * @throws InternTrackException If the input format is invalid.
      */
     private static void handleRemindCommand
-            (String line, ArrayList<Application> userApplications) throws InternTrackException {
+    (String line, ArrayList<Application> userApplications) throws InternTrackException {
         int numDays = Parser.parseRemindDays(line);
         LocalDate remindDate = LocalDate.now().plusDays(numDays);
         ArrayList<Application> filteredApplications =

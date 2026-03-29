@@ -61,7 +61,7 @@ public class Ui {
     /**
      * Prints a confirmation message when a new application is added.
      *
-     * @param newApplication   The application that was added.
+     * @param newApplication The application that was added.
      * @param userApplications The current list used to retrieve the total count.
      */
     public static void printAddApplication(Application newApplication, ArrayList<Application> userApplications) {

@@ -1,14 +1,15 @@
 package seedu.interntrack;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
 
 
 public class ParserTest {
     @Test
-    public void parse_validAddCommand_success() throws InternTrackException{
+    public void parse_validAddCommand_success() throws InternTrackException {
         String input = "add c/Google r/Software Engineer";
         Application result = Parser.createApplication(input);
         assertEquals("Google", result.getCompany());
@@ -19,7 +20,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parse_addCommandWithExtraSpaces_success () throws InternTrackException {
+    public void parse_addCommandWithExtraSpaces_success() throws InternTrackException {
         String input = "add c/ Google r/ Software Engineer";
         Application result = Parser.createApplication(input);
         assertEquals("Google", result.getCompany());
