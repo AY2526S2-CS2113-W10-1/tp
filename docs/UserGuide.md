@@ -185,7 +185,51 @@ There are 2 applications with Pending status.
 
 ---
 
-## 6. Sort applications: `sort`
+## 6. View applications with upcoming deadlines: `remind`
+
+Shows applications with deadlines within the next N days.
+
+Format
+
+```
+remind [DAYS]
+```
+
+Parameters
+
+- `[DAYS]` : Number of days to look ahead (optional, defaults to 7)
+
+Examples
+
+```
+remind
+```
+
+Shows applications due in the next 7 days.
+
+```
+remind 3
+```
+
+Shows applications due in the next 3 days.
+
+Example output
+
+```
+You have 2 applications due in the next 3 days (up to 2026-04-04).
+1. Software Engineer at Google is Pending. Apply by 2026-04-03.
+2. Data Analyst at Microsoft is Pending. Apply by 2026-04-02.
+```
+
+If there are no applications with upcoming deadlines:
+
+```
+No applications due in the next 3 days.
+```
+
+---
+
+## 7. Sort applications: `sort`
 
 Sorts applications based on specified criteria.
 
@@ -230,7 +274,7 @@ Sort applications by deadline in descending order.
 
 ---
 
-## 7. Undo the most recent change: `undo`
+## 8. Undo the most recent change: `undo`
 
 Reverts the most recent modifying command.
 
@@ -262,7 +306,7 @@ If there is nothing to undo, InternTrack will show an error message.
 
 ---
 
-## 8. Exit the application: `bye`
+## 9. Exit the application: `bye`
 
 Closes InternTrack.
 
@@ -305,6 +349,7 @@ Undo history is cleared when the application restarts.
 | Edit | `edit INDEX s/STATUS` |
 | Delete | `delete INDEX` |
 | Filter | `filter s/STATUS` |
+| Remind | `remind [DAYS]` |
 | Sort | `sort by/CRITERIA [DESC] [NONNULL]` |
 | Undo | `undo` |
 | Exit | `bye` |

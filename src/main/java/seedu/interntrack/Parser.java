@@ -2,8 +2,8 @@ package seedu.interntrack;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Parses user input strings into Application objects.
@@ -234,6 +234,45 @@ public class Parser {
         }
 
         return newCriteriaList.toArray(new String[0]);
+    }
+
+    /**
+     * Parses the number of days from a remind command.
+     * If no number is provided, defaults to 7 days.
+     *
+     * @param input The raw user input string.
+     * @return The parsed number of days.
+     * @throws InternTrackException If the input is not a valid positive integer.
+     */
+    public static int parseRemindDays(String input) throws InternTrackException {
+        assert input != null : "Remind command input should not be null";
+
+        String[] parts = input.trim().split("\\s+", 2);
+
+        // If no days specified, default to 7
+        if (parts.length < 2) {
+            logger.log(Level.INFO, "No days specified for remind command, defaulting to 7 days");
+            return 7;
+        }
+
+        String daysString = parts[1].trim();
+
+        try {
+            int days = Integer.parseInt(daysString);
+
+            if (days <= 0) {
+                logger.warning("Invalid number of days in remind command: " + daysString);
+                throw new InternTrackException("Number of days must be greater than 0.");
+            }
+
+            assert days > 0 : "Parsed days should be positive";
+            logger.log(Level.INFO, "Successfully parsed remind command with " + days + " days");
+            return days;
+
+        } catch (NumberFormatException e) {
+            logger.warning("Invalid day format in remind command: " + daysString);
+            throw new InternTrackException("Days must be a valid number. Use format: remind [DAYS]");
+        }
     }
 }
 

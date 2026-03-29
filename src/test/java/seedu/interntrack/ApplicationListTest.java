@@ -133,4 +133,95 @@ public class ApplicationListTest {
         assertEquals(1, filteredApplications.size());
         assertEquals("Applied", filteredApplications.get(0).getStatus());
     }
+
+    @Test
+    public void filterApplicationsOnOrBefore_withinDeadline_returnsFiltered() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        ApplicationList.addApplications(testList, "c/Google r/Intern d/" + today);
+        ApplicationList.addApplications(testList, "c/Meta r/Intern d/" + today.plusDays(5));
+        ApplicationList.addApplications(testList, "c/Amazon r/Intern d/" + today.minusDays(5));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                today.plusDays(3)
+        );
+        assertEquals(2, filtered.size());
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_emptyList_returnsEmpty() {
+        ArrayList<Application> testList = new ArrayList<>();
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                LocalDate.now().plusDays(7)
+        );
+        assertEquals(0, filtered.size());
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_noMatching_returnsEmpty() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        ApplicationList.addApplications(testList, "c/Google r/Intern d/" + today.plusDays(10));
+        ApplicationList.addApplications(testList, "c/Meta r/Intern d/" + today.plusDays(15));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                today.plusDays(3)
+        );
+
+        assertEquals(0, filtered.size());
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_allMatching_returnsAll() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        ApplicationList.addApplications(testList, "c/Google r/Intern d/" + today);
+        ApplicationList.addApplications(testList, "c/Meta r/Intern d/" + today.plusDays(1));
+        ApplicationList.addApplications(testList, "c/Amazon r/Intern d/" + today.plusDays(2));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                today.plusDays(7)
+        );
+
+        assertEquals(3, filtered.size());
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_nullDeadlines_excluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        ApplicationList.addApplications(testList, "c/Google r/Intern d/" + today.plusDays(2));
+        ApplicationList.addApplications(testList, "c/Meta r/Intern");
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                today.plusDays(7)
+        );
+
+        assertEquals(1, filtered.size());
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_deadlineEqualsFilterDate_included() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate filterDate = today.plusDays(3);
+
+        ApplicationList.addApplications(testList, "c/Google r/Intern d/" + filterDate);
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                filterDate
+        );
+
+        assertEquals(1, filtered.size());
+    }
 }
