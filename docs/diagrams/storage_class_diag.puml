@@ -1,0 +1,32 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam ClassSeparatorColor black
+skinparam ClassSeparatorThickness 1
+hide circle
+hide stereotype
+
+class Storage {
+  - {static} FILE_PATH : String = "./data/applications.txt"
+  - {static} FILE_DELIMITER : String = "|"
+  - {static} FILE_DELIMITER_REGEX : String = "\\|"
+  - {static} NULL_STRING : String = "null"
+  - {static} logger : Logger
+  --
+  + {static} loadApplications(userApplications : ArrayList) : void
+  - {static} parseFileString(line : String) : Application
+  + {static} saveApplications(userApplications : ArrayList) : void
+  - {static} applicationToFileFormat(application : Application) : String
+}
+
+class Application {
+  - company : String
+  - role : String
+  - deadline : LocalDate
+  - contact : String
+  - status : String
+}
+
+Storage ..> Application :> creates
+
+@enduml
