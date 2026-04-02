@@ -56,7 +56,17 @@ Java standard libraries such as `java.util`, `java.io`, and `java.time` were use
 
 ## Setting up, getting started
 
-{Provide step-by-step instructions for setting up the development environment and getting started with the project.}
+1. Ensure that you have **Java 17 or above** installed.
+2. Download the latest version of `InternTrack` from  
+   https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0
+3. Open a terminal in the folder containing the jar file.
+4. Run the application using:
+
+```
+java -jar InternTrack.jar
+```
+
+5. Type commands into the terminal and press Enter to execute them.
 
 ---
 
@@ -78,16 +88,6 @@ The ***Architecture Diagram*** given above explains the high-level design of the
 * Common : A suite of utility classes (e.g.,ApplicationList, EditDetails, FilterCriteria) shared across all components.
   The sequence of interaction follows a clear flow: User input → UI → Logic (Parser) → Model manipulation → Storage
   persistence.
-
-## Application List component
-
-![application\_list.png](diagrams/application_list_diag.png)
-
-The ApplicationList component is a stateless utility class that functions as a logic middleware. 
-
-It does not maintain its own state or store the application data internally; instead, it provides a suite of pure functions that perform operations (adding, filtering, sorting, editing) on an ArrayList<Application> passed in by the caller. 
-
-This decoupling ensures that the data storage remains independent of the processing logic.
 
 ---
 
@@ -365,7 +365,13 @@ A default status simplifies the user experience and ensures consistency across a
 
 ### Application List component
 
-{Description of Application List component will be added here.}
+![application\_list.png](diagrams/application_list_diag.png)
+
+The ApplicationList component is a stateless utility class that functions as a logic middleware. 
+
+It does not maintain its own state or store the application data internally; instead, it provides a suite of pure functions that perform operations (adding, filtering, sorting, editing) on an ArrayList<Application> passed in by the caller. 
+
+This decoupling ensures that the data storage remains independent of the processing logic.
 
 ---
 
@@ -899,7 +905,34 @@ interface.
 
 ### Use cases
 
-{Use cases will be added here.}
+#### Use Case 1: Add and manage internship applications
+
+**Actor:** User  
+**Precondition:** Application is running  
+**Postcondition:** Application data is saved to storage  
+
+**Main Success Scenario (MSS):**
+1. User adds a new internship application with company and role.
+2. System validates the input.
+3. System stores the application in the application list.
+4. System saves the updated list to storage.
+5. User lists applications to view all saved applications.
+6. User edits an application to update details such as deadline, contact, or status.
+7. System saves the updated list.
+8. User deletes an application that is no longer relevant.
+9. System saves the updated list.
+
+#### Use Case 2: Filter and sort applications
+
+**Actor:** User  
+
+**Main Success Scenario (MSS):**
+1. User requests to filter applications by a criterion (company, role, deadline, contact, or status).
+2. System filters the application list.
+3. System displays the filtered applications.
+4. User requests to sort applications by a specific criterion.
+5. System sorts the applications.
+6. System displays the sorted list.
 
 ---
 
@@ -927,13 +960,19 @@ interface.
 
 ### Launch and shutdown
 
-{Instructions for launching and shutting down the application will be added here.}
+**Launching the Application:**
 
----
+1. Open a terminal/command prompt in the directory containing `InternTrack.jar`
+2. Run: `java -jar InternTrack.jar`
+3. The application will display a welcome message and load any previously saved data from `./data/applications.txt`
+4. The terminal will be ready to accept commands
 
-### Deleting an application
+**Shutting Down the Application:**
 
-{Instructions for deleting an application will be added here.}
+1. Type `bye` at the command prompt
+2. Press Enter
+3. The application will save all data to `./data/applications.txt` and display a goodbye message
+4. The application will terminate and return to the command prompt
 
 ---
 
