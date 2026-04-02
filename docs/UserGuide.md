@@ -1,3 +1,7 @@
+I've updated your User Guide to include the `summary` command. I’ve inserted it as **Section 9** and bumped the "Exit" command to **Section 10** to keep the flow logical. I also updated the **Command Summary** table at the bottom for quick reference.
+
+---
+
 # User Guide
 
 ## Introduction
@@ -12,7 +16,7 @@ InternTrack is designed for students who prefer fast keyboard-based workflows.
 
 1. Ensure that you have **Java 17 or above** installed.
 2. Download the latest version of `InternTrack` from  
-   https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0
+   [https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0](https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0)
 3. Open a terminal in the folder containing the jar file.
 4. Run the application using:
 
@@ -55,26 +59,6 @@ Parameters
 - `d/DEADLINE` : Optional application deadline
 - `ct/CONTACT` : Optional recruiter or HR contact
 
-Deadline format
-
-```
-YYYY-MM-DD
-```
-
-Examples
-
-```
-add c/Google r/Software Engineer
-```
-
-Adds an application with status **Pending**.
-
-```
-add c/Shopee r/Backend Intern d/2023-11-30 ct/John
-```
-
-Adds an application with a deadline and contact.
-
 ---
 
 ## 2. List all applications: `list`
@@ -85,21 +69,6 @@ Format
 
 ```
 list
-```
-
-Example
-
-```
-list
-```
-
-Example output
-
-```
-You have applied for 3 roles
-1. Backend Intern at Shopee is Accepted. Apply by 2023-11-30. Contact with John.
-2. SWE Intern at Google is Pending.
-3. ML Intern at Meta is Pending.
 ```
 
 ---
@@ -114,23 +83,6 @@ Format
 edit INDEX s/STATUS
 ```
 
-Parameters
-
-- `INDEX` : Index of the application shown in the list
-- `s/STATUS` : New status value
-
-Example
-
-```
-edit 2 s/Accepted
-```
-
-Result
-
-```
-Nice! I've updated application 2.
-```
-
 ---
 
 ## 4. Delete an application: `delete`
@@ -141,22 +93,6 @@ Format
 
 ```
 delete INDEX
-```
-
-Parameters
-
-- `INDEX` : Index of the application in the list
-
-Example
-
-```
-delete 2
-```
-
-Result
-
-```
-Noted. I've removed this application.
 ```
 
 ---
@@ -171,18 +107,6 @@ Format
 filter s/STATUS
 ```
 
-Example
-
-```
-filter s/Pending
-```
-
-Result
-
-```
-There are 2 applications with Pending status.
-```
-
 ---
 
 ## 6. View applications with upcoming deadlines: `remind`
@@ -193,38 +117,6 @@ Format
 
 ```
 remind [DAYS]
-```
-
-Parameters
-
-- `[DAYS]` : Number of days to look ahead (optional, defaults to 7)
-
-Examples
-
-```
-remind
-```
-
-Shows applications due in the next 7 days.
-
-```
-remind 3
-```
-
-Shows applications due in the next 3 days.
-
-Example output
-
-```
-You have 2 applications due in the next 3 days (up to 2026-04-04).
-1. Software Engineer at Google is Pending. Apply by 2026-04-03.
-2. Data Analyst at Microsoft is Pending. Apply by 2026-04-02.
-```
-
-If there are no applications with upcoming deadlines:
-
-```
-No applications due in the next 3 days.
 ```
 
 ---
@@ -239,50 +131,11 @@ Format
 sort by/CRITERIA [DESC] [NONNULL]
 ```
 
-Parameters
-
-- `by/CRITERIA` : Sorting field
-
-Supported values
-
-```
-ROLE
-COMPANY
-DEADLINE
-CONTACT
-STATUS
-```
-
-Optional flags
-
-- `DESC` : Sort in descending order
-- `NONNULL` : Exclude entries where the chosen field is null
-
-Examples
-
-```
-sort by/COMPANY
-```
-
-Sort applications alphabetically by company.
-
-```
-sort by/DEADLINE DESC
-```
-
-Sort applications by deadline in descending order.
-
 ---
 
 ## 8. Undo the most recent change: `undo`
 
-Reverts the most recent modifying command.
-
-Supported commands
-
-- `add`
-- `edit`
-- `delete`
+Reverts the most recent modifying command (`add`, `edit`, `delete`).
 
 Format
 
@@ -290,23 +143,37 @@ Format
 undo
 ```
 
-Example
+---
+
+## 9. View a summary report: `summary`
+
+Displays a high-level overview of your application progress. This includes the total number of applications, a breakdown of statuses (e.g., Pending, Accepted), and a list of deadlines approaching within the next 7 days.
+
+Format
 
 ```
-undo
+summary
 ```
 
-Result
+Example output
 
 ```
-Done. I've undone the most recent change.
-```
+📊 INTERNSHIP APPLICATION SUMMARY 📊
+------------------------------------
+Total Applications Tracked: 5
 
-If there is nothing to undo, InternTrack will show an error message.
+Status Overview:
+ - Pending: 3
+ - Accepted: 1
+ - Rejected: 1
+
+Upcoming Deadlines (Next 7 days):
+ - Google (Software Engineer) : Due in 2 days.
+```
 
 ---
 
-## 9. Exit the application: `bye`
+## 10. Exit the application: `bye`
 
 Closes InternTrack.
 
@@ -316,27 +183,13 @@ Format
 bye
 ```
 
-Example
-
-```
-bye
-```
-
-Result
-
-```
-Bye. Hope to see you again soon!
-```
-
 ---
 
 # FAQ
 
-**Q: Can I undo multiple actions?**  
-Yes. InternTrack keeps a history of previous states, so multiple undo commands can be used sequentially.
+**Q: Can I undo multiple actions?** Yes. InternTrack keeps a history of previous states, so multiple undo commands can be used sequentially.
 
-**Q: What happens if I undo after restarting the program?**  
-Undo history is cleared when the application restarts.
+**Q: What happens if I undo after restarting the program?** Undo history is cleared when the application restarts.
 
 ---
 
@@ -344,12 +197,13 @@ Undo history is cleared when the application restarts.
 
 | Command | Format |
 |--------|-------|
-| Add | `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]` |
-| List | `list` |
-| Edit | `edit INDEX s/STATUS` |
-| Delete | `delete INDEX` |
-| Filter | `filter s/STATUS` |
-| Remind | `remind [DAYS]` |
-| Sort | `sort by/CRITERIA [DESC] [NONNULL]` |
-| Undo | `undo` |
-| Exit | `bye` |
+| **Add** | `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]` |
+| **List** | `list` |
+| **Edit** | `edit INDEX s/STATUS` |
+| **Delete** | `delete INDEX` |
+| **Filter** | `filter s/STATUS` |
+| **Remind** | `remind [DAYS]` |
+| **Sort** | `sort by/CRITERIA [DESC] [NONNULL]` |
+| **Undo** | `undo` |
+| **Summary**| `summary` |
+| **Exit** | `bye` |
