@@ -1,0 +1,29 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam ClassSeparatorColor black
+skinparam ClassSeparatorThickness 1
+hide circle
+hide stereotype
+
+class ApplicationList {
+  + {static} addApplications(userApplications : ArrayList, line:String) : Application
+  + {static} editApplication(userApplications : ArrayList, index:int, editDetails EditDetails) : Application
+  + {static} editApplicationStatus(userApplications : ArrayList, index:int, status String) : Application
+  + {static} filterApplications(userApplications : ArrayList, criteria : FilterCriteria) : ArrayList
+  + {static} filterApplicationsOnOrBefore(userApplications : ArrayList, deadline : LocalDate) : ArrayList
+  - {static} getTextFieldValue(applications : Application, field : FilterCriteria.Field) : String
+  + {static} sortApplicationsByCriteria (userApplication : ArrayList, criteria: String[]) : ArrayList
+}
+
+class Application {
+  - company : String
+  - role : String
+  - deadline : LocalDate
+  - contact : String
+  - status : String
+}
+
+ApplicationList --> Application
+
+@enduml

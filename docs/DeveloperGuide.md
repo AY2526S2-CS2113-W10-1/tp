@@ -81,7 +81,7 @@ The ***Architecture Diagram*** given above explains the high-level design of the
 
 ## Application List component
 
-![application\_list.png](diagrams/Application_List_diag.png)
+![application\_list.png](diagrams/application_list_diag.png)
 
 The ApplicationList component is a stateless utility class that functions as a logic middleware. 
 
@@ -447,7 +447,17 @@ updated total count.
 
 ### List feature
 
-{Description of List feature implementation will be added here.}
+The `list` command allows users to list every existing application.
+
+Command format:
+
+list
+
+Implementation: `Ui.printAllApplications()` to format and display every existing applications to user.
+
+##### Sequence Diagram: List Command
+
+![list\_sequence\_diag.png](diagrams/list_sequence_diag.png)
 
 ---
 
@@ -574,7 +584,27 @@ The `Parser#parseRemindDays()` method validates input and handles error cases:
 
 ### Sort feature
 
-{Description of Sort feature implementation will be added here.}
+The `sort` command allows users to sort the whole applications with some criteria.
+
+Command format:
+
+sort by/CRITERIA [FLAG]
+
+Example:
+
+sort by/ROLE DESC NONNULL
+
+1. `Parser.parseSortCriteria()` extracts the criteria and flag for sorting.
+2. The criteria and flags are validated to ensure it exists in the application list.
+3. `ApplicationList.sortApplicationsByCriteria()` perform the sorting upon receiving the criteria and flags.
+4. The returning value is a new list of applications after sorting.
+5. `Ui.printSortedApplications()` displays the sorting to the user.
+
+This approach keeps validation within the model while command interpretation remains in the logic layer.
+
+##### Sequence Diagram: Sort Command
+
+![sort\_sequence\_diag.png](diagrams/sort_sequence_diag.png)
 
 ---
 
