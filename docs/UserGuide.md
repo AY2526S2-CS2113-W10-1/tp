@@ -351,7 +351,39 @@ If there is nothing to undo, InternTrack will show an error message.
 
 ---
 
-## 9. Exit the application: `bye`
+## 9. Get summary: `summary`
+
+Provides a basic summary regarding the status of all internship applications.
+
+Format
+
+```
+summary
+```
+
+Example
+
+```
+summary
+```
+
+Result
+
+```
+____________________________________________________________
+   INTERNSHIP APPLICATION SUMMARY   
+------------------------------------
+Total Applications Tracked: 3
+
+Status Overview:
+ - Pending: 3
+
+Upcoming Deadlines (Next 7 days):
+ - Amazon (Fullstack Developer) : Due in 4 days.
+____________________________________________________________
+```
+
+## 10. Exit the application: `bye`
 
 Closes InternTrack.
 
@@ -397,4 +429,5 @@ Undo history is cleared when the application restarts.
 | Remind | `remind [DAYS]` |
 | Sort | `sort by/CRITERIA [DESC] [NONNULL]` |
 | Undo | `undo` |
+| Summary | `summary` |
 | Exit | `bye` |
