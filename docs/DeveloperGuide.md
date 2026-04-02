@@ -323,13 +323,28 @@ The `Parser` component is responsible for interpreting user input and converting
 
 ### FilterCriteria component
 
-{Description of FilterCriteria component will be added here.}
+`FilterCriteria` represents a single parsed filter condition.
+
+It stores either:
+
+- a text-based filter on `COMPANY`, `ROLE`, `CONTACT`, or `STATUS`, or
+- a date-based filter on `DEADLINE`
+
+This keeps the filter workflow type-safe without forcing the rest of the codebase to inspect raw command strings.
+`Parser.parseFilterCriteria()` builds the object, `ApplicationList.filterApplications()` executes it, and
+`Ui.printFilteredApplications()` uses `FilterCriteria.getSummary()` to generate user-facing messages.
 
 ---
 
 ### EditDetails component
 
-{Description of EditDetails component will be added here.}
+`EditDetails` is a lightweight data carrier for optional updates parsed from an `edit` command.
+
+Each field defaults to `null` when it is not being edited. This lets the parser return a single object regardless of
+how many fields the user wants to update, and lets `ApplicationList.editApplication()` apply only the fields that were
+actually supplied.
+
+The `hasUpdates()` method acts as a guard against no-op edit commands.
 
 ---
 
@@ -463,28 +478,63 @@ Implementation: `Ui.printAllApplications()` to format and display every existing
 
 ### Edit feature
 
-The `edit` command allows users to modify the status of an existing application.
+The `edit` command allows users to modify one or more fields of an existing application.
 
 Command format:
 
-edit INDEX s/STATUS
+edit INDEX [c/COMPANY] [r/ROLE] [d/DEADLINE] [ct/CONTACT] [s/STATUS]
 
 Example:
 
-edit 2 s/Accepted
+edit 2 c/Google Singapore s/Interview
 
 Implementation steps:
 
-1. `Parser.parseEditCommand()` extracts the index and new status.
-2. The index is validated to ensure it exists in the application list.
-3. `ApplicationList.editApplicationStatus()` retrieves the application.
-4. The application's `setStatus()` method updates the status value.
-5. `Storage.saveApplications()` persists the updated list.
-6. `Ui.printEditSuccess()` displays confirmation to the user.
+1. `InternTrack.handleEditCommand()` receives the raw command and saves the current state for undo.
+2. `Parser.parseEditIndex()` extracts and validates the 1-based index.
+3. `Parser.parseEditDetails()` tokenizes the remaining prefixed fields and builds an `EditDetails` object.
+4. The parser rejects duplicate prefixes and empty values before any model mutation occurs.
+5. `ApplicationList.editApplication()` validates the index and applies only the non-null updates.
+6. `Storage.saveApplications()` persists the updated list.
+7. `Ui.printEditApplication()` displays the updated application.
 
-The `Application.setStatus()` method also performs validation to ensure that the status value is not null or empty.
+`Parser.parseEditDetails()` supports these prefixes:
 
-This approach keeps validation within the model while command interpretation remains in the logic layer.
+- `c/` for company
+- `r/` for role
+- `d/` for deadline
+- `ct/` for contact
+- `s/` for status
+
+If no editable field is supplied, `ApplicationList.editApplication()` throws `InternTrackException` with
+`Provide at least one field to edit.`
+
+#### Design Considerations
+
+**Aspect: Representing multiple optional edits**
+
+**Alternative 1 (Current Choice):** Parse all supplied fields into a dedicated `EditDetails` object.
+
+*Pros:*
+- keeps `InternTrack` and `ApplicationList` independent from raw command syntax
+- scales cleanly as more editable fields are added
+- makes duplicate-field and empty-value validation explicit in one place
+
+*Cons:*
+- introduces one extra abstraction for a relatively small command
+
+**Alternative 2:** Pass each possible field as a separate argument through the call chain.
+
+*Pros:*
+- fewer supporting classes
+
+*Cons:*
+- method signatures become noisy and error-prone
+- harder to maintain as editable fields grow
+- weaker grouping of related validation logic
+
+**Rationale for Current Choice:** `EditDetails` is the cleanest way to model a partial update. It preserves separation of
+concerns: parsing stays in `Parser`, update logic stays in `ApplicationList`, and the model only exposes field setters.
 
 ---
 
@@ -496,7 +546,60 @@ This approach keeps validation within the model while command interpretation rem
 
 ### Filter feature
 
-{Description of Filter feature implementation will be added here.}
+The `filter` command allows users to view applications matching exactly one criterion.
+
+Command formats:
+
+filter c/COMPANY
+filter r/ROLE
+filter d/DEADLINE
+filter ct/CONTACT
+filter s/STATUS
+
+Examples:
+
+filter s/Pending
+filter d/2026-04-10
+
+Implementation steps:
+
+1. `InternTrack.handleFilterCommand()` passes the raw command to `Parser.parseFilterCriteria()`.
+2. `Parser.parseFilterCriteria()` tokenizes prefixed values and enforces that exactly one field is provided.
+3. The parser converts the field into a `FilterCriteria` object.
+4. `ApplicationList.filterApplications()` evaluates the criterion:
+   - text fields use case-insensitive equality
+   - deadline filters delegate to `filterApplicationsOnOrBefore()`
+5. `Ui.printFilteredApplications()` renders the matching subset without changing application order or persisted data.
+
+For deadline filtering, the current implementation treats `d/DATE` as "deadline on or before DATE". This is different
+from text filters, which require exact case-insensitive matches.
+
+#### Design Considerations
+
+**Aspect: Number of criteria accepted per filter command**
+
+**Alternative 1 (Current Choice):** Accept exactly one filter criterion.
+
+*Pros:*
+- simple command syntax and straightforward user feedback
+- avoids introducing boolean operator semantics (`AND`/`OR`) too early
+- keeps the filtering logic easy to test
+
+*Cons:*
+- users cannot compose multi-condition filters in one command
+
+**Alternative 2:** Allow multiple criteria in a single filter command.
+
+*Pros:*
+- more expressive querying
+
+*Cons:*
+- requires defining operator semantics and precedence
+- increases parser complexity and UI messaging complexity
+
+**Rationale for Current Choice:** A single criterion matches the current project scope and keeps the command predictable.
+If compound filtering becomes necessary later, the existing `FilterCriteria` abstraction provides a reasonable base to
+extend.
 
 ---
 

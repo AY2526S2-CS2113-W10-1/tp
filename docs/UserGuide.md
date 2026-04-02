@@ -104,20 +104,30 @@ You have applied for 3 roles
 
 ---
 
-## 3. Edit an application status: `edit`
+## 3. Edit an application: `edit`
 
-Updates the status of an existing application.
+Updates one or more fields of an existing application.
 
 Format
 
 ```
-edit INDEX s/STATUS
+edit INDEX [c/COMPANY] [r/ROLE] [d/DEADLINE] [ct/CONTACT] [s/STATUS]
 ```
 
 Parameters
 
 - `INDEX` : Index of the application shown in the list
-- `s/STATUS` : New status value
+- `c/COMPANY` : Updated company name
+- `r/ROLE` : Updated role name
+- `d/DEADLINE` : Updated deadline in `YYYY-MM-DD` format
+- `ct/CONTACT` : Updated recruiter or HR contact
+- `s/STATUS` : Updated status value
+
+Notes
+
+- You must provide at least one field to update.
+- Each field can only be supplied once in the same command.
+- The application index must be greater than 0.
 
 Example
 
@@ -125,10 +135,19 @@ Example
 edit 2 s/Accepted
 ```
 
-Result
+Updates application 2 to `Accepted`.
 
 ```
-Nice! I've updated application 2.
+edit 1 c/Google Singapore ct/Jane Tan
+```
+
+Updates both the company and contact fields for application 1.
+
+Example output
+
+```
+Nice! I've updated application 2:
+  Google - Software Engineer (Deadline: 2026-04-15, Contact: Jane Tan, Status: Accepted)
 ```
 
 ---
@@ -161,26 +180,52 @@ Noted. I've removed this application.
 
 ---
 
-## 5. Filter applications by status: `filter`
+## 5. Filter applications: `filter`
 
-Shows applications that match a specific status.
+Shows applications that match one filter criterion.
 
 Format
 
 ```
+filter c/COMPANY
+filter r/ROLE
+filter d/DEADLINE
+filter ct/CONTACT
 filter s/STATUS
 ```
 
-Example
+Notes
+
+- The command accepts exactly one field per use.
+- Text matching for company, role, contact, and status is case-insensitive.
+- For `d/DEADLINE`, InternTrack shows applications with deadlines on or before the specified date.
+
+Examples
 
 ```
 filter s/Pending
 ```
 
-Result
+Shows all applications whose status is `Pending`.
 
 ```
-There are 2 applications with Pending status.
+filter c/Google
+```
+
+Shows all applications whose company is `Google`.
+
+```
+filter d/2026-04-10
+```
+
+Shows all applications with deadlines on or before `2026-04-10`.
+
+Example output
+
+```
+You have 2 applications matching status Pending.
+1. Backend Intern at Shopee is Pending. Apply by 2026-04-03.
+2. SWE Intern at Google is Pending.
 ```
 
 ---
@@ -346,9 +391,9 @@ Undo history is cleared when the application restarts.
 |--------|-------|
 | Add | `add c/COMPANY r/ROLE [d/DEADLINE] [ct/CONTACT]` |
 | List | `list` |
-| Edit | `edit INDEX s/STATUS` |
+| Edit | `edit INDEX [c/COMPANY] [r/ROLE] [d/DEADLINE] [ct/CONTACT] [s/STATUS]` |
 | Delete | `delete INDEX` |
-| Filter | `filter s/STATUS` |
+| Filter | `filter c/COMPANY`, `filter r/ROLE`, `filter d/DEADLINE`, `filter ct/CONTACT`, or `filter s/STATUS` |
 | Remind | `remind [DAYS]` |
 | Sort | `sort by/CRITERIA [DESC] [NONNULL]` |
 | Undo | `undo` |

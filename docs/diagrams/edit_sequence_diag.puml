@@ -2,13 +2,16 @@
 actor User
 participant Ui
 participant InternTrack
+participant Parser
 participant ApplicationList
 participant Storage
 
-User -> Ui : edit INDEX s/STATUS
+User -> Ui : edit INDEX [FIELDS]
 Ui -> InternTrack : handleEditCommand()
-InternTrack -> ApplicationList : editApplicationStatus()
+InternTrack -> Parser : parseEditIndex()
+InternTrack -> Parser : parseEditDetails()
+InternTrack -> ApplicationList : editApplication()
 InternTrack -> Storage : saveApplications()
-InternTrack -> Ui : printEditSuccess()
+InternTrack -> Ui : printEditApplication()
 
 @enduml
