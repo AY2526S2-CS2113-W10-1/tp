@@ -21,6 +21,7 @@ public class InternTrack {
     private static final String SORT_COMMAND = "sort";
     private static final String UNDO_COMMAND = "undo";
     private static final String REMIND_COMMAND = "remind";
+    private static final String SUMMARY_COMMAND = "summary";
     private static final Logger logger = Logger.getLogger("InternTrack");
 
     /**
@@ -80,6 +81,8 @@ public class InternTrack {
                 handleSortCommand(trimmedLine, userApplications);
             } else if (command.equals(REMIND_COMMAND)) {
                 handleRemindCommand(trimmedLine, userApplications);
+            } else if (command.equals(SUMMARY_COMMAND)) {
+                handleSummaryCommand(userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
                 Ui.printUnknownCommand();
@@ -252,13 +255,24 @@ public class InternTrack {
      * @param userApplications The current list of applications to filter.
      * @throws InternTrackException If the input format is invalid.
      */
-    private static void handleRemindCommand
-    (String line, ArrayList<Application> userApplications) throws InternTrackException {
+    private static void handleRemindCommand(String line, ArrayList<Application> userApplications)
+            throws InternTrackException {
         int numDays = Parser.parseRemindDays(line);
         LocalDate remindDate = LocalDate.now().plusDays(numDays);
         ArrayList<Application> filteredApplications =
                 ApplicationList.filterApplicationsOnOrBefore(userApplications, remindDate);
         Ui.printUpcomingDeadlines(filteredApplications, numDays, remindDate);
+    }
+
+    /**
+     * Handles the summary command by generating and displaying a report of applications.
+     * ADDED METHOD.
+     *
+     * @param userApplications The current list of applications to summarize.
+     */
+    private static void handleSummaryCommand(ArrayList<Application> userApplications) {
+        logger.info("Processing summary command");
+        SummaryCommand.execute(userApplications);
     }
 
     /**
@@ -285,5 +299,4 @@ public class InternTrack {
                                          Stack<ArrayList<Application>> undoHistory) {
         undoHistory.push(copyApplicationList(userApplications));
     }
-
 }
