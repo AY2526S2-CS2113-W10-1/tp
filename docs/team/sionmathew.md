@@ -27,7 +27,7 @@ My contributions span multiple components including command handling, parsing, m
 **Highlights:**
 - Required cross-component integration and defensive programming.
 
-**PRs:** [#14](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/14),[#22](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/22)
+**PRs:** [#14](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/14), [#22](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/22)
 
 ---
 
