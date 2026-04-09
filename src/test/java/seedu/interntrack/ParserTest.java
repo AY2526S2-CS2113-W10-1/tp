@@ -5,47 +5,70 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
+    /**
+     * Verifies all fields of a successfully parsed application.
+     * Eliminates repeated assertion patterns in add feature success tests and
+     * reduces code duplication.
+     *
+     * @param result The application object returned by the parser.
+     * @param expectedCompany The expected company name string.
+     * @param expectedRole The expected role title string.
+     * @param expectedStatus The expected application status string.
+     * @param expectedDeadline The expected deadline date.
+     * @param expectedContact The expected contact information string.
+     */
+    private void assertApplicationFields(Application result, String expectedCompany,
+                                         String expectedRole, String expectedStatus,
+                                         LocalDate expectedDeadline, String expectedContact) {
+        assertEquals(expectedCompany, result.getCompany());
+        assertEquals(expectedRole, result.getRole());
+        assertEquals(expectedStatus, result.getStatus());
+        assertEquals(expectedDeadline, result.getDeadline());
+        assertEquals(expectedContact, result.getContact());
+    }
+
+    /**
+     * Verifies that the correct exception is thrown with the expected message.
+     * Eliminates repeated exception handling patterns in add feature error tests.
+     *
+     * @param input The raw input string to be parsed.
+     * @param expectedMessage The error message expected from the exception.
+     */
+    private void verifyParserExceptionThrown(String input, String expectedMessage) {
+        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
+            Parser.createApplication(input);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
     @Test
     public void parse_validAddCommand_success() throws InternTrackException {
         String input = "add c/Google r/Software Engineer";
         Application result = Parser.createApplication(input);
-        assertEquals("Google", result.getCompany());
-        assertEquals("Software Engineer", result.getRole());
-        assertEquals("Pending", result.getStatus());
-        assertNull(result.getDeadline());
-        assertNull(result.getContact());
+        assertApplicationFields(result, "Google", "Software Engineer", "Pending", null, null);
     }
 
     @Test
     public void parse_addCommandWithExtraSpaces_success() throws InternTrackException {
         String input = "add c/ Google r/ Software Engineer";
         Application result = Parser.createApplication(input);
-        assertEquals("Google", result.getCompany());
-        assertEquals("Software Engineer", result.getRole());
-        assertEquals("Pending", result.getStatus());
-        assertNull(result.getDeadline());
-        assertNull(result.getContact());
+        assertApplicationFields(result, "Google", "Software Engineer", "Pending", null, null);
     }
 
     @Test
     public void parse_missingCompanyPrefix_throwsInternTrackException() {
         String input = "add r/Software Engineer";
-        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
-            Parser.createApplication(input);
-        });
-        assertEquals("Both company (c/) and role (r/) are required!", exception.getMessage());
+        verifyParserExceptionThrown(input, "Both company (c/) and role (r/) are required!");
     }
 
     @Test
     public void parse_invalidDateFormat_throwsException() {
         String input = "add c/Google r/Intern d/30-11-2023";
-        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
-            Parser.createApplication(input);
-        });
-        assertEquals("Date must be in YYYY-MM-DD format.", exception.getMessage());
+        verifyParserExceptionThrown(input, "Date must be in YYYY-MM-DD format.");
     }
 
     @Test
@@ -148,6 +171,20 @@ public class ParserTest {
         assertEquals("Status cannot be empty.", exception.getMessage());
     }
 
+    /**
+     * Verifies that the remind command throws an exception with the correct message.
+     * Eliminates repeated exception handling pattern from various remind error tests.
+     *
+     * @param input The raw input string containing the remind command.
+     * @param expectedMessage The error message expected from the exception.
+     */
+    private void verifyRemindExceptionThrown(String input, String expectedMessage) {
+        InternTrackException exception = assertThrows(InternTrackException.class, () -> {
+            Parser.parseRemindDays(input);
+        });
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
     @Test
     public void parseRemindDays_noArgument_returnsDefault() throws InternTrackException {
         String input = "remind";
@@ -176,44 +213,29 @@ public class ParserTest {
         assertEquals(365, days);
     }
 
+
     @Test
     public void parseRemindDays_zero_throwsException() {
         String input = "remind 0";
-        InternTrackException exception = assertThrows(
-                InternTrackException.class,
-                () -> Parser.parseRemindDays(input)
-        );
-        assertEquals("Number of days must be greater than 0.", exception.getMessage());
+        verifyRemindExceptionThrown(input, "Number of days must be greater than 0.");
     }
 
     @Test
     public void parseRemindDays_negativeNumber_throwsException() {
         String input = "remind -5";
-        InternTrackException exception = assertThrows(
-                InternTrackException.class,
-                () -> Parser.parseRemindDays(input)
-        );
-        assertEquals("Number of days must be greater than 0.", exception.getMessage());
+        verifyRemindExceptionThrown(input, "Number of days must be greater than 0.");
     }
 
     @Test
     public void parseRemindDays_nonIntegerInput_throwsException() {
         String input = "remind abc";
-        InternTrackException exception = assertThrows(
-                InternTrackException.class,
-                () -> Parser.parseRemindDays(input)
-        );
-        assertEquals("Days must be a valid number. Use format: remind [DAYS]", exception.getMessage());
+        verifyRemindExceptionThrown(input, "Days must be a valid number. Use format: remind [DAYS]");
     }
 
     @Test
     public void parseRemindDays_decimalNumber_throwsException() {
         String input = "remind 3.5";
-        InternTrackException exception = assertThrows(
-                InternTrackException.class,
-                () -> Parser.parseRemindDays(input)
-        );
-        assertEquals("Days must be a valid number. Use format: remind [DAYS]", exception.getMessage());
+        verifyRemindExceptionThrown(input, "Days must be a valid number. Use format: remind [DAYS]");
     }
 
     @Test
@@ -226,10 +248,6 @@ public class ParserTest {
     @Test
     public void parseRemindDays_specialCharacters_throwsException() {
         String input = "remind @5";
-        InternTrackException exception = assertThrows(
-                InternTrackException.class,
-                () -> Parser.parseRemindDays(input)
-        );
-        assertEquals("Days must be a valid number. Use format: remind [DAYS]", exception.getMessage());
+        verifyRemindExceptionThrown(input, "Days must be a valid number. Use format: remind [DAYS]");
     }
 }

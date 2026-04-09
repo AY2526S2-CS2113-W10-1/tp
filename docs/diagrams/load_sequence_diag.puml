@@ -1,0 +1,55 @@
+@startuml
+skinparam style strictuml
+
+participant ":InternTrack" as main
+participant ":Storage" as storage
+participant "f:File" as file
+participant "s:Scanner" as scanner
+participant "userApplications:ArrayList" as list
+
+main -> storage : loadApplications(userApplications)
+activate storage
+
+storage -> file ** : new File(FILE_PATH)
+activate file
+file --> storage : f
+deactivate file
+
+alt parent directory does not exist
+    storage -> file : mkdirs()
+end
+
+alt file does not exist
+    storage -> file : createNewFile()
+    storage --> main : return
+end
+
+storage -> scanner ** : new Scanner(f)
+activate scanner
+scanner --> storage : s
+
+loop more lines to read
+    storage -> scanner : nextLine()
+    activate scanner
+    scanner --> storage : line
+    deactivate scanner
+
+    storage -> storage : parseFileString(line)
+    activate storage #LightGray
+    storage --> storage : application
+    deactivate storage
+
+    opt parsing successful
+        storage -> list : add(application)
+        activate list
+        list --> storage
+        deactivate list
+    end
+end
+
+storage -> scanner : close()
+destroy scanner
+
+storage --> main
+deactivate storage
+@enduml

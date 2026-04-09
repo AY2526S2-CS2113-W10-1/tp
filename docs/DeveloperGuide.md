@@ -74,17 +74,21 @@ java -jar InternTrack.jar
 
 ![architecture\_diag.png](diagrams/architecture_diag.png)
 
+Some return arrows are omitted for clarity. The solid arrows are the real workflow of the application. Dashed arrows represent the dependency of some components to Common utilities
+
 The ***Architecture Diagram*** given above explains the high-level design of the App. The architecture of **InternTrack** follows a layered design pattern with the following main components:
 
-* InternTrack: Responsible for the app's lifecycle. It initializes components in the correct sequence at launch and
-  ensures a clean shutdown by invoking necessary cleanup methods. It also orchestrates the application flow.
-* UI (Ui): Handles user input and output via the command-line interface
-* Parser: Processes user commands and handle back to InternTrack
-* Model (Application): Maintains the in-memory data structure for applications
+* InternTrack: Acts as the central coordinator of the application, handles the main application loop and command dispatching.
+  Delegates tasks to other components such as Parser, ApplicationList, UI, and Storage.
+* UI (Ui): Responsible for all user interactions via the command line, reads user input and displays output messages, does not contain business logic.
+* Parser: Responsible for interpreting raw user input. Extracts command types and parameters (e.g., index, filters, fields) and return to InternTracker
+* Model (ApplicationList): ApplicationList contains and operates the core business logic
 * Storage (Storage): Manages persistence of application data to disk
-* Common : A suite of utility classes (e.g.,ApplicationList, EditDetails, FilterCriteria) shared across all components.
-  The sequence of interaction follows a clear flow: User input → UI → Logic (Parser) → Model manipulation → Storage
+* Common : A suite of utility classes (i.e. Application,EditDetails, FilterCriteria) shared across all components. They are responsible for supporting communication between components
+  The sequence of interaction follows a clear flow: User input → UI → InternTracker → Parser/ApplicationList/Storage → UI
   persistence.
+
+The architecture could be divided into few layers as the graph above, which is the User-interaction, orchestrator, logic processing and disk storage.
 
 ---
 
@@ -204,26 +208,49 @@ Microsoft|Azure Developer|null|contact.unknown@microsoft.com|Pending
 
 ---
 
-#### Save Operation Sequence
+#### Data Flow: Initialization and Persistence
 
-**Key steps:**
-1. User enters an add command
-2. `InternTrack` creates a new `Application` and adds it to the list
-3. `Storage.saveApplications()` is called immediately
-4. All applications are converted to pipe-delimited format via `applicationToFileFormat()`
-5. The entire list is written to `./data/applications.txt` in a single file operation
+When the application starts, `InternTrack` must first restore the user's previous state. Then, as the user performs actions, any modifications are immediately persisted to disk.
 
----
+##### Load Operation: Application Startup
 
-#### Load Operation Sequence
+When `InternTrack.main()` runs, the very first step is to load existing application data from disk:
 
-**Key steps:**
-1. `InternTrack.main()` initializes an empty application list
-2. `Storage.loadApplications()` is called
-3. If the file/directory doesn't exist, they are created automatically
-4. Each line is read and parsed via `parseFileString()`
+1. An empty `ArrayList<Application>` is initialized in memory
+2. `Storage.loadApplications()` is called to restore saved data
+3. The method checks if the `./data/` directory and `./data/applications.txt` file exist; if not, they are created automatically
+4. Each non-empty line in the file is parsed via `parseFileString()`, which:
+   - Splits the line using the pipe delimiter (`|`)
+   - Validates that exactly 5 fields are present and correctly formatted
+   - Creates an `Application` object with the parsed values
 5. Valid applications are added to the in-memory list
-6. Malformed lines are logged and skipped
+6. Malformed or unparseable lines are logged as warnings and skipped, ensuring the application never crashes due to corrupted data
+
+The following sequence diagram illustrates this process:
+
+![load_sequence_diag.png](diagrams/load_sequence_diag.png)
+
+This approach ensures that users' data is always available when the application starts, and any corrupted entries are handled gracefully without preventing the application from loading successfully.
+
+##### Save Operation: After User Actions
+
+Once the application is running and the user performs an action that modifies the application list (such as `add`, `edit`, or `delete`), the changes must be persisted to disk immediately:
+
+1. The user enters a command (e.g., `add c/Google r/SWE Intern`)
+2. The `Parser` validates and parses the command
+3. `InternTrack` creates a new `Application` object and adds it to the in-memory list
+4. `Storage.saveApplications()` is called immediately to persist the change
+5. Inside `saveApplications()`:
+   - A `StringBuilder` accumulates the string representation of all applications
+   - Each application is converted to pipe-delimited format via `applicationToFileFormat()`, which concatenates the five fields (company, role, deadline, contact, status) separated by the `|` delimiter
+   - The entire accumulated string is written to `./data/applications.txt` in a single atomic file operation
+   - On successful write, an informational log message is recorded
+
+The following sequence diagram illustrates the save operation:
+
+![saveApplications_sequence-saveApplications_Sequence_Diagram.png](diagrams/saveApplications_sequence-saveApplications_Sequence_Diagram.png)
+
+By saving immediately after every modifying operation, the application guarantees that the on-disk state always matches the in-memory state, preventing data loss in the event of a crash or unexpected termination.
 
 ---
 
@@ -427,11 +454,13 @@ A default status simplifies the user experience and ensures consistency across a
 
 ![application\_list.png](diagrams/application_list_diag.png)
 
+The diagram intentionally focuses on the static method of the ApplicationList that are exposed to be used by other components and show its dependency only, the method of common utility classes are not shown for clarity.
+
 The ApplicationList component is a stateless utility class that functions as a logic middleware. 
 
 It does not maintain its own state or store the application data internally; instead, it provides a suite of pure functions that perform operations (adding, filtering, sorting, editing) on an ArrayList<Application> passed in by the caller. 
 
-This decoupling ensures that the data storage remains independent of the processing logic.
+This decoupling ensures that the data storage remains independent of the processing logic. 
 
 ---
 

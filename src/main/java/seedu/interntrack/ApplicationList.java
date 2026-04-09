@@ -19,7 +19,7 @@ public class ApplicationList {
      * @return The newly created Application object.
      * @throws InternTrackException If the input is missing required fields or has an invalid date.
      */
-    public static Application addApplications(ArrayList<Application> userApplications,
+    public static Application addApplication(ArrayList<Application> userApplications,
                                               String line) throws InternTrackException {
         Application newApplication = Parser.createApplication(line);
         assert newApplication.getCompany() != null && !newApplication.getCompany().isEmpty() :
@@ -137,6 +137,20 @@ public class ApplicationList {
         logger.log(Level.INFO, "Filtered applications on or before deadline=" + deadline
                 + ". Matches: " + filteredApplications.size());
         return filteredApplications;
+    }
+
+    /**
+     * Filters applications with deadlines on or before the specified number of days from today.
+     * Encapsulates the date calculation logic to maintain proper abstraction levels.
+     *
+     * @param userApplications The list of applications to filter.
+     * @param numDays The number of days from today to consider as the deadline cutoff.
+     * @return A filtered list of applications with deadlines within the specified range.
+     */
+    public static ArrayList<Application> filterApplicationsByDaysAhead(
+            ArrayList<Application> userApplications, int numDays) {
+        LocalDate cutoffDate = LocalDate.now().plusDays(numDays);
+        return filterApplicationsOnOrBefore(userApplications, cutoffDate);
     }
 
     /**

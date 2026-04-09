@@ -1,0 +1,68 @@
+@startuml saveApplications_sequence
+!theme plain
+hide footbox
+skinparam shadowing false
+
+title saveApplications Sequence Diagram
+
+actor "Caller" as caller
+participant ":Storage" as Storage
+participant "fw:FileWriter" as FileWriter
+participant "sb:StringBuilder" as StringBuilder
+
+caller -> Storage : saveApplications(userApplications)
+activate Storage
+
+create FileWriter
+Storage -> FileWriter : new FileWriter(FILE_PATH)
+activate FileWriter
+FileWriter --> Storage
+deactivate FileWriter
+
+create StringBuilder
+Storage -> StringBuilder : new StringBuilder()
+activate StringBuilder
+StringBuilder --> Storage
+deactivate StringBuilder
+
+loop for each application in userApplications
+
+    ' Self-invocation with stacked activation bar
+    Storage -> Storage : applicationToFileFormat(application)
+    activate Storage
+    Storage --> Storage : formattedString
+    deactivate Storage
+
+    Storage -> StringBuilder : append(formattedString)
+    activate StringBuilder
+    StringBuilder --> Storage
+    deactivate StringBuilder
+
+    ' Reflecting the .append(System.lineSeparator()) in your code
+    Storage -> StringBuilder : append(lineSeparator)
+    activate StringBuilder
+    StringBuilder --> Storage
+    deactivate StringBuilder
+end
+
+' Unrolled sb.toString()
+Storage -> StringBuilder : toString()
+activate StringBuilder
+StringBuilder --> Storage : fullContent
+deactivate StringBuilder
+
+Storage -> FileWriter : write(fullContent)
+activate FileWriter
+FileWriter --> Storage
+deactivate FileWriter
+
+' Reflecting the implicit close from try-with-resources
+Storage -> FileWriter : close()
+activate FileWriter
+FileWriter --> Storage
+deactivate FileWriter
+
+Storage --> caller
+deactivate Storage
+
+@enduml

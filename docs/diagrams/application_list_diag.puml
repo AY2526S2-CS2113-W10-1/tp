@@ -1,19 +1,15 @@
 @startuml
 
 skinparam classAttributeIconSize 0
-skinparam ClassSeparatorColor black
-skinparam ClassSeparatorThickness 1
 hide circle
-hide stereotype
 
 class ApplicationList {
-  + {static} addApplications(userApplications : ArrayList, line:String) : Application
-  + {static} editApplication(userApplications : ArrayList, index:int, editDetails EditDetails) : Application
-  + {static} editApplicationStatus(userApplications : ArrayList, index:int, status String) : Application
-  + {static} filterApplications(userApplications : ArrayList, criteria : FilterCriteria) : ArrayList
-  + {static} filterApplicationsOnOrBefore(userApplications : ArrayList, deadline : LocalDate) : ArrayList
-  - {static} getTextFieldValue(applications : Application, field : FilterCriteria.Field) : String
-  + {static} sortApplicationsByCriteria (userApplication : ArrayList, criteria: String[]) : ArrayList
+  + {static} addApplications(ArrayList<Application>, String) : Application
+  + {static} editApplication(ArrayList<Application>, int, EditDetails) : Application
+  + {static} editApplicationStatus(ArrayList<Application>, int, String) : Application
+  + {static} filterApplications(ArrayList<Application>, FilterCriteria) : ArrayList<Application>
+  + {static} filterApplicationsOnOrBefore(ArrayList<Application>, LocalDate) : ArrayList<Application>
+  + {static} sortApplicationsByCriteria(ArrayList<Application>, String[]) : ArrayList<Application>
 }
 
 class Application {
@@ -24,6 +20,31 @@ class Application {
   - status : String
 }
 
-ApplicationList --> Application
+class EditDetails {
+  - company : String
+  - role : String
+  - deadline : LocalDate
+  - contact : String
+  - status : String
+}
+
+class FilterCriteria {
+  - field : Field
+  - textValue : String
+  - deadlineValue : LocalDate
+}
+
+class Field <<enumeration>> {
+  COMPANY
+  ROLE
+  DEADLINE
+  CONTACT
+  STATUS
+}
+
+ApplicationList ..> Application
+ApplicationList ..> EditDetails
+ApplicationList ..> FilterCriteria
+FilterCriteria --> Field
 
 @enduml

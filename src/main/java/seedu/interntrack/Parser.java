@@ -34,6 +34,7 @@ public class Parser {
     private static final String FILTER_SINGLE_FIELD_ERROR = "Filter command accepts exactly one field.";
     private static final Pattern PREFIX_PATTERN = Pattern.compile("ct/|c/|r/|d/|s/");
     private static final Logger logger = Logger.getLogger("Parser");
+    private static final int DEFAULT_REMIND_DAYS = 7;
 
     /**
      * Creates an Application from a raw user input string.
@@ -311,10 +312,11 @@ public class Parser {
 
         String[] parts = input.trim().split("\\s+", 2);
 
-        // If no days specified, default to 7
+        // If no days specified, default to DEFAULT_REMIND_DAYS
         if (parts.length < 2) {
-            logger.log(Level.INFO, "No days specified for remind command, defaulting to 7 days");
-            return 7;
+            logger.log(Level.INFO, "No days specified for remind command, defaulting to "
+                    + DEFAULT_REMIND_DAYS + " days");
+            return DEFAULT_REMIND_DAYS;
         }
 
         String daysString = parts[1].trim();
@@ -327,7 +329,6 @@ public class Parser {
                 throw new InternTrackException("Number of days must be greater than 0.");
             }
 
-            assert days > 0 : "Parsed days should be positive";
             logger.log(Level.INFO, "Successfully parsed remind command with " + days + " days");
             return days;
 

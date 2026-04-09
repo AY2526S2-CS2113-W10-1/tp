@@ -3,11 +3,11 @@ package seedu.interntrack;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.time.LocalDate;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the loading and saving of applications to a local text file.
@@ -19,6 +19,11 @@ public class Storage {
     private static final String FILE_DELIMITER_REGEX = "\\|";
     private static final String NULL_STRING = "null";
     private static final Logger logger = Logger.getLogger("Storage");
+    private static final int COMPANY_INDEX = 0;
+    private static final int ROLE_INDEX = 1;
+    private static final int DEADLINE_INDEX = 2;
+    private static final int CONTACT_INDEX = 3;
+    private static final int STATUS_INDEX = 4;
 
     /**
      * Loads applications from the local file into the provided list.
@@ -37,6 +42,7 @@ public class Storage {
             if (!f.exists()) {
                 f.createNewFile();
                 logger.log(Level.INFO, "Created new applications file: " + FILE_PATH);
+                return;
             }
 
             try (Scanner s = new Scanner(f)) {
@@ -50,8 +56,7 @@ public class Storage {
             }
 
         } catch (IOException e) {
-            logger.log(Level.WARNING, "IO error while loading applications: " + e.getMessage());
-            System.out.println("File not found: " + e.getMessage());
+            logger.log(Level.SEVERE, "IO error while loading applications: " + e.getMessage());
         }
     }
 
@@ -72,16 +77,16 @@ public class Storage {
         }
 
         try {
-            String company = parts[0];
-            String role = parts[1];
+            String company = parts[COMPANY_INDEX];
+            String role = parts[ROLE_INDEX];
 
             LocalDate deadline = null;
-            if (!parts[2].equals(NULL_STRING) && !parts[2].isEmpty()) {
-                deadline = LocalDate.parse(parts[2]);
+            if (!parts[DEADLINE_INDEX].equals(NULL_STRING) && !parts[DEADLINE_INDEX].isEmpty()) {
+                deadline = LocalDate.parse(parts[DEADLINE_INDEX]);
             }
 
-            String contact = (parts[3].equals(NULL_STRING)) ? null : parts[3];
-            String status = parts[4];
+            String contact = (parts[CONTACT_INDEX].equals(NULL_STRING)) ? null : parts[CONTACT_INDEX];
+            String status = parts[STATUS_INDEX];
 
             Application app = new Application(company, role, deadline, contact);
             app.setStatus(status);
@@ -102,8 +107,7 @@ public class Storage {
      * @param userApplications The list of applications to be saved.
      */
     public static void saveApplications(ArrayList<Application> userApplications) {
-        try {
-            FileWriter fw = new FileWriter(FILE_PATH);
+        try (FileWriter fw = new FileWriter(FILE_PATH)) {
             StringBuilder sb = new StringBuilder();
 
             // Convert all applications to string format
@@ -112,12 +116,10 @@ public class Storage {
             }
 
             fw.write(sb.toString());
-            fw.close();
             logger.log(Level.INFO, "Successfully saved " + userApplications.size() + " applications to file");
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "IO error while saving applications: " + e.getMessage());
-            System.out.println("Something went wrong: " + e.getMessage());
         }
     }
 

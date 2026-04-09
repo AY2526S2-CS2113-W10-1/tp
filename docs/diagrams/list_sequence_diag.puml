@@ -1,14 +1,11 @@
 @startuml
 actor User
-participant Ui
-participant InternTrack
-participant System
+participant ":Ui" as Ui
+participant ":InternTrack" as InternTrack
 
 User -> Ui : list
 Ui->InternTrack : handleListCommand()
-InternTrack -> System : System.out.println()
-System ->InternTrack
-InternTrack ->Ui
-Ui -> User
+InternTrack -->Ui
+Ui --> User
 
 @enduml
