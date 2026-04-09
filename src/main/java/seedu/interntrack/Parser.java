@@ -32,6 +32,8 @@ public class Parser {
             + " ct/CONTACT, or s/STATUS";
     private static final String DUPLICATE_FIELD_ERROR = "Each field can only be specified once.";
     private static final String FILTER_SINGLE_FIELD_ERROR = "Filter command accepts exactly one field.";
+    private static final String ARCHIVE_FORMAT_ERROR = "Use format: archive INDEX";
+    private static final String UNARCHIVE_FORMAT_ERROR = "Use format: unarchive INDEX";
     private static final Pattern PREFIX_PATTERN = Pattern.compile("ct/|c/|r/|d/|s/");
     private static final Logger logger = Logger.getLogger("Parser");
     private static final int DEFAULT_REMIND_DAYS = 7;
@@ -244,6 +246,54 @@ public class Parser {
         } catch (NumberFormatException e) {
             throw new InternTrackException("Application index must be a valid number.");
         }
+    }
+
+    /**
+     * Parses the application index from a command requiring a 1-based index.
+     *
+     * @param input The raw user input string.
+     * @param formatError The format error message for the command.
+     * @return The parsed 1-based index.
+     * @throws InternTrackException If the index is missing or invalid.
+     */
+    private static int parsePositiveIndex(String input, String formatError) throws InternTrackException {
+        String[] parts = input.trim().split("\\s+", 2);
+
+        if (parts.length < 2) {
+            throw new InternTrackException(formatError);
+        }
+
+        try {
+            int index = Integer.parseInt(parts[1]);
+            if (index <= 0) {
+                throw new InternTrackException("Application index must be greater than 0.");
+            }
+            return index;
+        } catch (NumberFormatException e) {
+            throw new InternTrackException("Application index must be a valid number.");
+        }
+    }
+
+    /**
+     * Parses the application index from an archive command.
+     *
+     * @param input The raw user input string.
+     * @return The parsed 1-based index.
+     * @throws InternTrackException If the index is missing or invalid.
+     */
+    public static int parseArchiveIndex(String input) throws InternTrackException {
+        return parsePositiveIndex(input, ARCHIVE_FORMAT_ERROR);
+    }
+
+    /**
+     * Parses the application index from an unarchive command.
+     *
+     * @param input The raw user input string.
+     * @return The parsed 1-based index.
+     * @throws InternTrackException If the index is missing or invalid.
+     */
+    public static int parseUnarchiveIndex(String input) throws InternTrackException {
+        return parsePositiveIndex(input, UNARCHIVE_FORMAT_ERROR);
     }
 
     /**

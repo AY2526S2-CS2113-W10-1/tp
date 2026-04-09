@@ -169,6 +169,7 @@ public class Application {
 
     /**
      * Sets whether this application is archived.
+     * Archived applications remain in storage but are excluded from active views.
      *
      * @param isArchived The new archived state.
      */
@@ -178,9 +179,10 @@ public class Application {
 
     @Override
     public String toString() {
+        String archiveLabel = isArchived ? "[Archived] " : "";
         String tempDeadline = (deadline != null) ? "Deadline: " + deadline + ", " : "";
         String tempContact = (contact != null) ? "Contact: " + contact + ", " : "";
-        return company + " - " + role
+        return archiveLabel + company + " - " + role
                 + " (" + tempDeadline + tempContact + "Status: " + status + ")";
     }
 }

@@ -22,6 +22,9 @@ public class InternTrack {
     private static final String UNDO_COMMAND = "undo";
     private static final String REMIND_COMMAND = "remind";
     private static final String SUMMARY_COMMAND = "summary";
+    private static final String ARCHIVE_COMMAND = "archive";
+    private static final String UNARCHIVE_COMMAND = "unarchive";
+    private static final String LIST_ARCHIVED_COMMAND = "listarchived";
     private static final Logger logger = Logger.getLogger("InternTrack");
 
     /**
@@ -83,6 +86,12 @@ public class InternTrack {
                 handleRemindCommand(trimmedLine, userApplications);
             } else if (command.equals(SUMMARY_COMMAND)) {
                 handleSummaryCommand(userApplications);
+            } else if (command.equals(ARCHIVE_COMMAND)) {
+                handleArchiveCommand(trimmedLine, userApplications, undoHistory);
+            } else if (command.equals(UNARCHIVE_COMMAND)) {
+                handleUnarchiveCommand(trimmedLine, userApplications, undoHistory);
+            } else if (command.equals(LIST_ARCHIVED_COMMAND)) {
+                handleListArchivedCommand(userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
                 Ui.printUnknownCommand();
@@ -151,7 +160,7 @@ public class InternTrack {
      */
     private static void handleListCommand(ArrayList<Application> userApplications)
             throws InternTrackException {
-        Ui.printAllApplications(userApplications);
+        Ui.printAllApplications(ApplicationList.getActiveApplications(userApplications));
         logger.info("Showing all current applications");
     }
 
@@ -266,6 +275,74 @@ public class InternTrack {
     private static void handleSummaryCommand(ArrayList<Application> userApplications) {
         logger.info("Processing summary command");
         SummaryCommand.execute(userApplications);
+    }
+
+    /**
+     * Handles the archive command by marking an application as archived.
+     * Saves the current state for undo before performing the operation.
+     *
+     * @param line Raw user input containing the index.
+     * @param userApplications The current list of applications.
+     * @param undoHistory The undo stack storing previous states.
+     * @throws InternTrackException If the index is invalid or already archived.
+     */
+    private static void handleArchiveCommand(String line, ArrayList<Application> userApplications,
+                                             Stack<ArrayList<Application>> undoHistory)
+            throws InternTrackException {
+
+        int index = Parser.parseArchiveIndex(line);
+
+        saveStateForUndo(userApplications, undoHistory);
+
+        Application archivedApplication = ApplicationList.archiveApplication(userApplications, index);
+
+        Ui.printArchiveApplication(archivedApplication, index);
+        Storage.saveApplications(userApplications);
+
+        logger.info("Archived application at index " + index);
+    }
+
+    /**
+     * Handles the unarchive command by restoring an archived application.
+     * Saves the current state for undo before performing the operation.
+     *
+     * @param line Raw user input containing the index.
+     * @param userApplications The current list of applications.
+     * @param undoHistory The undo stack storing previous states.
+     * @throws InternTrackException If the index is invalid or not archived.
+     */
+    private static void handleUnarchiveCommand(String line, ArrayList<Application> userApplications,
+                                               Stack<ArrayList<Application>> undoHistory)
+            throws InternTrackException {
+
+        int index = Parser.parseUnarchiveIndex(line);
+
+        saveStateForUndo(userApplications, undoHistory);
+
+        Application unarchivedApplication =
+                ApplicationList.unarchiveApplication(userApplications, index);
+
+        Ui.printUnarchiveApplication(unarchivedApplication, index);
+        Storage.saveApplications(userApplications);
+
+        logger.info("Unarchived application at index " + index);
+    }
+
+    /**
+     * Handles the listarchived command by displaying all archived applications.
+     *
+     * @param userApplications The current list of applications.
+     * @throws InternTrackException If printing fails.
+     */
+    private static void handleListArchivedCommand(ArrayList<Application> userApplications)
+            throws InternTrackException {
+
+        ArrayList<Application> archivedApplications =
+                ApplicationList.getArchivedApplications(userApplications);
+
+        Ui.printArchivedApplications(archivedApplications);
+
+        logger.info("Showing archived applications");
     }
 
     /**

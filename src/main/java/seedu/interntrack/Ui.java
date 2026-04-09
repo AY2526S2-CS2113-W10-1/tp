@@ -85,7 +85,8 @@ public class Ui {
         assert status != null : "Existing application must have status";
         String deadline = (app.getDeadline() != null) ? " Apply by " + app.getDeadline().toString() + "." : "";
         String contact = (app.getContact() != null) ? " Contact with " + app.getContact() + "." : "";
-        System.out.println((index + 1) + ". " + role + " at " + company + " is " + status + "." + deadline + contact);
+        String archiveLabel = app.isArchived() ? "[Archived] " : "";
+        System.out.println((index + 1) + ". " + archiveLabel + role + " at " + company + " is " + status + "." + deadline + contact);
     }
 
     /**
@@ -108,6 +109,31 @@ public class Ui {
         }
     }
 
+    public static void printArchivedApplications(ArrayList<Application> archivedApplications) {
+        if (archivedApplications.isEmpty()) {
+            System.out.println("You have no archived applications.");
+            return;
+        }
+
+        int applicationCount = archivedApplications.size();
+        System.out.println("You have " + applicationCount
+                + ((applicationCount > 1) ? " archived applications" : " archived application"));
+
+        for (int i = 0; i < applicationCount; i++) {
+            Application app = archivedApplications.get(i);
+            printApplication(app, i);
+        }
+    }
+
+    public static void printArchiveApplication(Application application, int index) {
+        System.out.println("Nice! I've archived application " + index + ":");
+        System.out.println("  " + application.toString());
+    }
+
+    public static void printUnarchiveApplication(Application application, int index) {
+        System.out.println("Nice! I've restored application " + index + ":");
+        System.out.println("  " + application.toString());
+    }
     /**
      * Prints applications filtered by the given criterion.
      *
