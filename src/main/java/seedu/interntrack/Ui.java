@@ -86,7 +86,8 @@ public class Ui {
         String deadline = (app.getDeadline() != null) ? " Apply by " + app.getDeadline().toString() + "." : "";
         String contact = (app.getContact() != null) ? " Contact with " + app.getContact() + "." : "";
         String archiveLabel = app.isArchived() ? "[Archived] " : "";
-        System.out.println((index + 1) + ". " + archiveLabel + role + " at " + company + " is " + status + "." + deadline + contact);
+        System.out.println((index + 1) + ". " + archiveLabel
+                + role + " at " + company + " is " + status + "." + deadline + contact);
     }
 
     /**

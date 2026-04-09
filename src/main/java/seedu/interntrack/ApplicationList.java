@@ -423,13 +423,18 @@ public class ApplicationList {
      * @return The string value of the specified field, or null if not applicable.
      */
     private static String getTextFieldValue(Application application, FilterCriteria.Field field) {
-        return switch (field) {
-            case COMPANY -> application.getCompany();
-            case ROLE -> application.getRole();
-            case CONTACT -> application.getContact();
-            case STATUS -> application.getStatus();
-            default -> null;
-        };
+        switch (field) {
+        case COMPANY:
+            return application.getCompany();
+        case ROLE:
+            return application.getRole();
+        case CONTACT:
+            return application.getContact();
+        case STATUS:
+            return application.getStatus();
+        default:
+            return null;
+        }
     }
 
     /**
