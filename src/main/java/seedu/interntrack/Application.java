@@ -13,6 +13,7 @@ public class Application {
     private LocalDate deadline;
     private String contact;
     private String status;
+    private boolean isArchived;
 
     /**
      * Initialises a new application with the specified details.
@@ -29,6 +30,7 @@ public class Application {
         this.deadline = deadline;
         this.contact = contact;
         this.status = DEFAULT_STATUS;
+        this.isArchived = false;
         // Assertion to verify default status postcondition
         assert this.status.equals(DEFAULT_STATUS) : "New applications must start with Pending status";
     }
@@ -44,6 +46,7 @@ public class Application {
         this.deadline = other.deadline;
         this.contact = other.contact;
         this.status = other.status;
+        this.isArchived = other.isArchived;
     }
 
     /**
@@ -89,6 +92,15 @@ public class Application {
      */
     public String getStatus() {
         return status;
+    }
+
+    /**
+     * Returns whether this application is archived.
+     *
+     * @return true if archived, false otherwise.
+     */
+    public boolean isArchived() {
+        return isArchived;
     }
 
     /**
@@ -153,6 +165,15 @@ public class Application {
 
         this.status = status.trim();
         assert !this.status.isBlank() : "Application status should not be blank after setting";
+    }
+
+    /**
+     * Sets whether this application is archived.
+     *
+     * @param isArchived The new archived state.
+     */
+    public void setArchived(boolean isArchived) {
+        this.isArchived = isArchived;
     }
 
     @Override

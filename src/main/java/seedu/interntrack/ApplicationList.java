@@ -105,6 +105,9 @@ public class ApplicationList {
 
         ArrayList<Application> filteredApplications = new ArrayList<>();
         for (Application application : userApplications) {
+            if (application.isArchived()) {
+                continue;
+            }
             String applicationValue = getTextFieldValue(application, criteria.getField());
             if (applicationValue != null && applicationValue.equalsIgnoreCase(criteria.getTextValue())) {
                 filteredApplications.add(application);
@@ -127,7 +130,7 @@ public class ApplicationList {
         ArrayList<Application> filteredApplications = new ArrayList<>();
         for (Application application : userApplications) {
             LocalDate applicationDeadline = application.getDeadline();
-            if (applicationDeadline != null && !applicationDeadline.isAfter(deadline)) {
+            if (!application.isArchived() && applicationDeadline != null && !applicationDeadline.isAfter(deadline)) {
                 filteredApplications.add(application);
             }
         }
@@ -151,6 +154,74 @@ public class ApplicationList {
         case STATUS -> application.getStatus();
         default -> null;
         };
+    }
+
+    public static Application archiveApplication(ArrayList<Application> userApplications, int index)
+            throws InternTrackException {
+
+        if (index < 1 || index > userApplications.size()) {
+            throw new InternTrackException("Application index is out of range.");
+        }
+
+        Application application = userApplications.get(index - 1);
+
+        if (application.isArchived()) {
+            throw new InternTrackException("Application is already archived.");
+        }
+
+        application.setArchived(true);
+
+        logger.info("Archived application at index " + index + ": " + application);
+        return application;
+    }
+
+    public static Application unarchiveApplication(ArrayList<Application> userApplications, int index)
+            throws InternTrackException {
+
+        if (index < 1 || index > userApplications.size()) {
+            throw new InternTrackException("Application index is out of range.");
+        }
+
+        Application application = userApplications.get(index - 1);
+
+        if (!application.isArchived()) {
+            throw new InternTrackException("Application is not archived.");
+        }
+
+        application.setArchived(false);
+
+        logger.info("Unarchived application at index " + index + ": " + application);
+        return application;
+    }
+
+    public static ArrayList<Application> getActiveApplications(ArrayList<Application> userApplications) {
+        ArrayList<Application> activeApplications = new ArrayList<>();
+
+        for (Application app : userApplications) {
+            if (!app.isArchived()) {
+                activeApplications.add(app);
+            }
+        }
+
+        logger.log(Level.INFO, "Retrieved active applications. Count: " + activeApplications.size());
+        return activeApplications;
+    }
+
+    public static ArrayList<Application> getArchivedApplications(ArrayList<Application> userApplications) {
+        ArrayList<Application> archivedApplications = new ArrayList<>();
+
+        for (Application app : userApplications) {
+            if (app.isArchived()) {
+                archivedApplications.add(app);
+            }
+        }
+
+        logger.log(Level.INFO, "Retrieved archived applications. Count: " + archivedApplications.size());
+        return archivedApplications;
+    }
+
+    public static ArrayList<Application> getAllApplications(ArrayList<Application> userApplications) {
+        return new ArrayList<>(userApplications);
     }
 
     /**
@@ -187,7 +258,7 @@ public class ApplicationList {
         final boolean finalIsDesc = isDesc;
         final boolean finalIsNonnull = isNonnull;
 
-        ArrayList<Application> sortedApplicationList = new ArrayList<>(userApplications);
+        ArrayList<Application> sortedApplicationList = getActiveApplications(userApplications);
         if (criteria[0].equals("ROLE")) {
             sortedApplicationList.sort((a, b) -> {
                 int condition = a.getRole().compareToIgnoreCase(b.getRole());
