@@ -314,7 +314,8 @@ public class Parser {
 
         // If no days specified, default to DEFAULT_REMIND_DAYS
         if (parts.length < 2) {
-            logger.log(Level.INFO, "No days specified for remind command, defaulting to " + DEFAULT_REMIND_DAYS + " days");
+            logger.log(Level.INFO, "No days specified for remind command, defaulting to "
+                    + DEFAULT_REMIND_DAYS + " days");
             return DEFAULT_REMIND_DAYS;
         }
 
