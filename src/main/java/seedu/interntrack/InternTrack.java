@@ -33,9 +33,11 @@ public class InternTrack {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
+        //Set up application list, history, storage and logger
         ArrayList<Application> userApplications = new ArrayList<>();
         Stack<ArrayList<Application>> undoHistory = new Stack<>();
         Storage.loadApplications(userApplications);
+        LoggerConfig.setup();
         Ui.printWelcome();
         while (Ui.hasMoreCommands()) {
             String line = Ui.readCommand();
