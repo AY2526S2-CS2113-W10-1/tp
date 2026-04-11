@@ -7,10 +7,16 @@ participant ":ApplicationList" as ApplicationList
 
 User -> Ui : sort by/CRITERIA [FLAG]
 Ui -> InternTrack : handleSortCommand()
+activate InternTrack
 InternTrack -> Parser : parseSortCriteria()
+activate Parser
 Parser --> InternTrack :
+deactivate Parser
 InternTrack -> ApplicationList : sortApplicationsByCriteria()
+activate ApplicationList
 ApplicationList --> InternTrack
+deactivate ApplicationList
 InternTrack -->Ui :printSortedApplications()
+deactivate InternTrack
 Ui-->User
 @enduml

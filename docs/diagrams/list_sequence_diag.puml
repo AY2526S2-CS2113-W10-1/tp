@@ -5,7 +5,9 @@ participant ":InternTrack" as InternTrack
 
 User -> Ui : list
 Ui->InternTrack : handleListCommand()
+activate InternTrack
 InternTrack -->Ui
+deactivate InternTrack
 Ui --> User
 
 @enduml
