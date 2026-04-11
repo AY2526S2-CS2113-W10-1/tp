@@ -56,6 +56,7 @@ public class Storage {
             }
 
         } catch (IOException e) {
+            System.out.println("Warning: Unable to open save file, your changes may be lost. Please retry");
             logger.log(Level.SEVERE, "IO error while loading applications: " + e.getMessage());
         }
     }
@@ -124,6 +125,7 @@ public class Storage {
             logger.log(Level.INFO, "Successfully saved " + userApplications.size() + " applications to file");
 
         } catch (IOException e) {
+            System.out.println("Warning: Failed to save data to disk. Your changes may be lost.");
             logger.log(Level.SEVERE, "IO error while saving applications: " + e.getMessage());
         }
     }
