@@ -1300,7 +1300,7 @@ interface.
    - `add c/Google r/SWE Intern`
    - `add c/Microsoft r/Azure Developer`
 2. Verify both appear in the list
-3. **Close the application** (via `exit` command)
+3. **Close the application** (via `bye` command)
 4. **Reopen the application**
 5. **Expected**: Both applications reappear in the list; data persisted correctly
 
