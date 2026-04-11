@@ -250,4 +250,74 @@ public class ParserTest {
         String input = "remind @5";
         verifyRemindExceptionThrown(input, "Days must be a valid number. Use format: remind [DAYS]");
     }
+
+
+    @Test
+    public void parse_prefixLikeContent_success() throws InternTrackException {
+        String input = "add c/C/O Company r/Principal Backend d/2026-12-25";
+        Application result = Parser.createApplication(input);
+
+        assertApplicationFields(result, "C/O Company", "Principal Backend",
+                "Pending", LocalDate.parse("2026-12-25"), null);
+    }
+
+    @Test
+    public void parse_multiWordFields_success() throws InternTrackException {
+        String input = "add c/Parent Sub Division r/Senior Staff Engineer";
+        Application result = Parser.createApplication(input);
+
+        assertApplicationFields(result, "Parent Sub Division", "Senior Staff Engineer",
+                "Pending", null, null);
+    }
+
+
+    @Test
+    public void parse_extremeStringLength_success() throws InternTrackException {
+        StringBuilder longCompany = new StringBuilder();
+        for (int i = 0; i < 50; i++) {
+            longCompany.append("VeryLongCompanyNamePart_");
+        }
+        String input = "add c/" + longCompany.toString() + " r/Engineer";
+        Application result = Parser.createApplication(input);
+
+        assertEquals(longCompany.toString(), result.getCompany());
+        assertEquals("Engineer", result.getRole());
+    }
+
+    @Test
+    public void parse_extraWhitespace_trimmedCorrectly() throws InternTrackException {
+        String input = "add c/  Google   r/   Software Engineer   d/2026-12-25";
+        Application result = Parser.createApplication(input);
+
+        assertEquals("Google", result.getCompany());
+        assertEquals("Software Engineer", result.getRole());
+    }
+
+
+    @Test
+    public void parse_consecutiveDelimiters_handledCorrectly() throws InternTrackException {
+        String input = "add c/Google r/Backend Intern d/2026-12-25 ct/Alice";
+        Application result = Parser.createApplication(input);
+
+        assertApplicationFields(result, "Google", "Backend Intern",
+                "Pending", LocalDate.parse("2026-12-25"), "Alice");
+    }
+
+
+    @Test
+    public void parse_specialCharactersInContact_success() throws InternTrackException {
+        String input = "add c/Google r/Engineer ct/alice.smith+2026@example.com";
+        Application result = Parser.createApplication(input);
+
+        assertEquals("alice.smith+2026@example.com", result.getContact());
+    }
+
+
+    @Test
+    public void parse_statusCasePreservation_success() throws InternTrackException {
+        String input = "edit 1 s/APPLIED";
+        EditDetails editDetails = Parser.parseEditDetails(input);
+
+        assertEquals("APPLIED", editDetails.getStatus());
+    }
 }

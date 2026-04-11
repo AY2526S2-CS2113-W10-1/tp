@@ -313,4 +313,158 @@ public class ApplicationListTest {
 
         assertEquals(1, filteredApplications.size());
     }
+
+    @Test
+    public void filterApplicationsOnOrBefore_exactToday_included() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + today);
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(testList, today);
+
+        assertEquals(1, filtered.size());
+        assertEquals("Google", filtered.get(0).getCompany());
+    }
+
+
+    @Test
+    public void filterApplicationsOnOrBefore_oneDayAfter_excluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate cutoff = today.plusDays(3);
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + cutoff.plusDays(1));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(testList, cutoff);
+
+        assertEquals(0, filtered.size());
+    }
+
+
+    @Test
+    public void filterApplicationsOnOrBefore_multipleOnSameCutoff_allIncluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate cutoff = today.plusDays(5);
+        for (int i = 0; i < 5; i++) {
+            ApplicationList.addApplication(testList, "c/Company" + i + " r/Role d/" + cutoff);
+        }
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(testList, cutoff);
+
+        assertEquals(5, filtered.size());
+        for (Application app : filtered) {
+            assertEquals(cutoff, app.getDeadline());
+        }
+    }
+
+    @Test
+    public void filterApplicationsOnOrBefore_leapYearDate_handledCorrectly() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        // 2024 is a leap year, so Feb 29 exists
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/2024-02-29");
+        ApplicationList.addApplication(testList, "c/Meta r/Engineer d/2024-03-01");
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(
+                testList,
+                LocalDate.parse("2024-02-29"));
+
+        assertEquals(1, filtered.size());
+        assertEquals("Google", filtered.get(0).getCompany());
+    }
+
+
+    @Test
+    public void filterApplicationsOnOrBefore_allPastDeadline_emptyResult() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate cutoff = LocalDate.now();
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + cutoff.plusDays(10));
+        ApplicationList.addApplication(testList, "c/Meta r/Engineer d/" + cutoff.plusDays(20));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsOnOrBefore(testList, cutoff);
+
+        assertEquals(0, filtered.size());
+    }
+
+
+    @Test
+    public void filterApplicationsByDaysAhead_oneDayBoundary_tomorrowIncluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        LocalDate dayAfter = today.plusDays(2);
+
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + today);
+        ApplicationList.addApplication(testList, "c/Meta r/Engineer d/" + tomorrow);
+        ApplicationList.addApplication(testList, "c/Amazon r/PM d/" + dayAfter);
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsByDaysAhead(testList, 1);
+
+        // Today and tomorrow should be included, but day after tomorrow excluded
+        assertEquals(2, filtered.size());
+        assertEquals(LocalDate.parse("2026-04-09"), filtered.get(0).getDeadline());
+        assertEquals(tomorrow, filtered.get(1).getDeadline());
+    }
+
+
+    @Test
+    public void filterApplicationsByDaysAhead_negativeDays_pastDeadlineExcluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate twoDaysAgo = today.minusDays(2);
+
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + yesterday);
+        ApplicationList.addApplication(testList, "c/Meta r/Engineer d/" + twoDaysAgo);
+        ApplicationList.addApplication(testList, "c/Amazon r/PM d/" + today);
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsByDaysAhead(testList, -2);
+
+        assertEquals(1, filtered.size());
+        assertEquals("Meta", filtered.get(0).getCompany());
+    }
+
+
+    @Test
+    public void filterApplicationsByDaysAhead_largeNumberOfDays_yearAheadIncluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate dayInSixMonths = today.plusDays(180);
+        LocalDate dayInOneYear = today.plusDays(365);
+        LocalDate dayAfterYear = today.plusDays(366);
+
+        ApplicationList.addApplication(testList, "c/Google r/Intern d/" + dayInSixMonths);
+        ApplicationList.addApplication(testList, "c/Meta r/Engineer d/" + dayInOneYear);
+        ApplicationList.addApplication(testList, "c/Amazon r/PM d/" + dayAfterYear);
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsByDaysAhead(testList, 365);
+
+        // Applications within 365 days should be included (all except day 366+)
+        assertEquals(2, filtered.size());
+        assertEquals(dayInSixMonths, filtered.get(0).getDeadline());
+        assertEquals(dayInOneYear, filtered.get(1).getDeadline());
+    }
+
+    
+    @Test
+    public void filterApplicationsByDaysAhead_multipleBoundaryApplications_allIncluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate cutoffDate = today.plusDays(7);
+
+        // Add 5 applications all with the exact cutoff date
+        for (int i = 0; i < 5; i++) {
+            ApplicationList.addApplication(testList, "c/Company" + i + " r/Role d/" + cutoffDate);
+        }
+
+        // Add one application just beyond the cutoff
+        ApplicationList.addApplication(testList, "c/Beyond r/Role d/" + cutoffDate.plusDays(1));
+
+        ArrayList<Application> filtered = ApplicationList.filterApplicationsByDaysAhead(testList, 7);
+
+        // All 5 applications on the boundary should be included, the one beyond excluded
+        assertEquals(5, filtered.size());
+        for (Application app : filtered) {
+            assertEquals(cutoffDate, app.getDeadline());
+        }
+    }
 }
