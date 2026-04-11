@@ -1,5 +1,26 @@
 # User Guide
 
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Quick Start](#quick-start)
+3. [Features](#features)
+4. [Commands](#commands)
+   - [1. Add a new internship application: `add`](#1-add-a-new-internship-application-add)
+   - [2. List all applications: `list`](#2-list-all-applications-list)
+   - [3. Edit an application: `edit`](#3-edit-an-application-edit)
+   - [4. Delete an application: `delete`](#4-delete-an-application-delete)
+   - [5. Filter applications: `filter`](#5-filter-applications-filter)
+   - [6. View applications with upcoming deadlines: `remind`](#6-view-applications-with-upcoming-deadlines-remind)
+   - [7. Sort applications: `sort`](#7-sort-applications-sort)
+   - [8. Undo the most recent change: `undo`](#8-undo-the-most-recent-change-undo)
+   - [9. Get summary: `summary`](#9-get-summary-summary)
+   - [10. Exit the application: `bye`](#10-exit-the-application-bye)
+5. [FAQ](#faq)
+6. [Command Summary](#command-summary)
+
+---
+
 ## Introduction
 
 InternTrack is a command-line application that helps users track their internship applications efficiently. It allows users to record application details, update statuses, and organize applications using filtering and sorting commands.
