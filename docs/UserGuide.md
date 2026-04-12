@@ -251,7 +251,9 @@ You have 2 applications matching status Pending.
 
 ## 6. View applications with upcoming deadlines: `remind`
 
-Shows applications with deadlines within the next N days.
+Shows applications with deadlines within the next N days. 
+
+It will throw error if the day specified is invalid(negative, not integer) or too big(more than 32 bits).
 
 Format
 
