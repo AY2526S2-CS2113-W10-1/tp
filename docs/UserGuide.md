@@ -36,11 +36,9 @@ InternTrack is designed for students who prefer fast keyboard-based workflows.
    https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0
 3. Open a terminal in the folder containing the jar file.
 4. Run the application using:
-
 ```
 java -jar InternTrack.jar
 ```
-
 5. Type commands into the terminal and press Enter to execute them.
 
 ---
@@ -298,6 +296,8 @@ No applications due in the next 3 days.
 ## 7. Sort applications: `sort`
 
 Sorts applications based on specified criteria.
+
+If the criteria for sorting is non-existent, it will be put at the end of the list unless `NONNULL` flag is used.
 
 Format
 
