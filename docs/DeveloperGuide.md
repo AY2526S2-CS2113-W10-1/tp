@@ -1377,3 +1377,16 @@ interface.
 
 ---
 
+**Scenario 7: Pipe Character Restriction**
+
+1. Run the application
+2. Attempt to add an application with a pipe character in the company name: `add c/Google|Meta r/SWE Intern`
+3. **Expected**: 
+   - Command is rejected with error message: `"Input cannot contain the pipe character '|'. Please use a different character."`
+   - No application is added to the list
+   - Data file remains unchanged
+
+This test verifies that the pipe character (`|`), which is used as the internal delimiter in the storage format, is properly rejected to prevent data corruption.
+
+---
+

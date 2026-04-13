@@ -51,6 +51,10 @@ java -jar InternTrack.jar
 * Items in **square brackets** are optional. Example: `[d/DEADLINE]`
 * Parameters can be given in **any order**. Example: `add c/Google r/Intern` is the same as `add r/Intern c/Google`.
 
+### Important: Restricted Characters
+
+* The pipe character `|` is **not allowed** in any text input fields (company, role, contact, deadline). Using this character will result in an error message. Please use alternative characters such as `/`, `&`, or `-` instead.
+
 ---
 
 # Commands
