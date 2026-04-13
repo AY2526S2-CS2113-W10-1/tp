@@ -249,7 +249,7 @@ filter s/STATUS
 Notes
 
 - The command accepts exactly one field per use.
-- Text matching for company, role, contact, and status is case-insensitive.
+- Text matching for company, role, contact, and status is case-insensitive and matches substrings.
 - For `d/DEADLINE`, InternTrack shows applications with deadlines on or before the specified date.
 
 Examples
@@ -261,10 +261,10 @@ filter s/Pending
 Shows all applications whose status is `Pending`.
 
 ```
-filter c/Google
+filter c/Meta
 ```
 
-Shows all applications whose company is `Google`.
+Shows all applications whose company contains `Meta`, such as `Meta Platforms`.
 
 ```
 filter d/2026-04-10
@@ -605,3 +605,4 @@ Undo history is cleared when the application restarts.
 | Exit | `bye` |
 
 * Archived applications are marked with `[Archived]` when displayed.
+* Text-based `filter` commands use case-insensitive substring matching.

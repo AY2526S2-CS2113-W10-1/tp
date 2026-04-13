@@ -705,6 +705,7 @@ filter s/STATUS
 Examples:
 
 filter s/Pending
+filter c/Meta
 filter d/2026-04-10
 
 Implementation steps:
@@ -713,12 +714,12 @@ Implementation steps:
 2. `Parser.parseFilterCriteria()` tokenizes prefixed values and enforces that exactly one field is provided.
 3. The parser converts the field into a `FilterCriteria` object.
 4. `ApplicationList.filterApplications()` evaluates the criterion:
-   - text fields use case-insensitive equality
+   - text fields use case-insensitive substring matching
    - deadline filters delegate to `filterApplicationsOnOrBefore()`
 5. `Ui.printFilteredApplications()` renders the matching subset without changing application order or persisted data.
 
 For deadline filtering, the current implementation treats `d/DATE` as "deadline on or before DATE". This is different
-from text filters, which require exact case-insensitive matches.
+from text filters, which return applications whose field values contain the search term, ignoring case.
 
 #### Design Considerations
 
@@ -745,6 +746,32 @@ from text filters, which require exact case-insensitive matches.
 
 **Rationale for Current Choice:** A single criterion matches the current project scope and keeps the command predictable.
 If compound filtering becomes necessary later, the existing `FilterCriteria` abstraction provides a reasonable base to
+extend.
+
+**Aspect: Text matching semantics**
+
+**Alternative 1 (Current Choice):** Use case-insensitive substring matching for text fields.
+
+*Pros:*
+- reduces typing for long company, role, or contact names
+- better matches user expectations for quick filtering
+- preserves deterministic behavior without needing ranking logic
+
+*Cons:*
+- short search terms may produce broader result sets than exact matching
+
+**Alternative 2:** Use case-insensitive exact matching.
+
+*Pros:*
+- keeps results narrowly scoped
+- implementation is slightly simpler
+
+*Cons:*
+- poor usability for long or multi-word field values
+- forces users to remember and type full field contents precisely
+
+**Rationale for Current Choice:** Substring matching improves usability for common workflows such as filtering
+`Meta Platforms` with `filter c/Meta`, while still remaining simple to explain and test.
 extend.
 
 ---
@@ -1305,6 +1332,17 @@ interface.
 3. **Close the application** (via `bye` command)
 4. **Reopen the application**
 5. **Expected**: Both applications reappear in the list; data persisted correctly
+
+#### Test Case 5: Filter Command Matches Text Substrings
+
+1. Run the application
+2. Add applications:
+   - `add c/Meta Platforms r/SWE`
+   - `add c/Google Singapore r/SWE`
+3. Run `filter c/Meta`
+4. **Expected**:
+   - The result includes `Meta Platforms`
+   - Matching is case-insensitive and based on substrings, so the full company name does not need to be typed
 
 ---
 

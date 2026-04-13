@@ -31,7 +31,7 @@ public class FilterCriteria {
      * Creates a text-based filter criterion.
      *
      * @param field     The application field being filtered.
-     * @param textValue The expected field value.
+     * @param textValue The user-provided search text.
      * @return The created filter criterion.
      */
     public static FilterCriteria forText(Field field, String textValue) {

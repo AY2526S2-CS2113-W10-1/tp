@@ -149,6 +149,34 @@ public class ApplicationListTest {
     }
 
     @Test
+    public void filterApplications_companySubstringCriterion_returnsFilteredList() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        ApplicationList.addApplication(testList, "c/Meta Platforms r/SWE");
+        ApplicationList.addApplication(testList, "c/Google r/SWE");
+
+        ArrayList<Application> filteredApplications = ApplicationList.filterApplications(
+                testList,
+                FilterCriteria.forText(FilterCriteria.Field.COMPANY, "meta"));
+
+        assertEquals(1, filteredApplications.size());
+        assertEquals("Meta Platforms", filteredApplications.get(0).getCompany());
+    }
+
+    @Test
+    public void filterApplications_roleSubstringCriterion_isCaseInsensitive() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        ApplicationList.addApplication(testList, "c/Meta r/Software Engineer Intern");
+        ApplicationList.addApplication(testList, "c/Google r/Product Manager");
+
+        ArrayList<Application> filteredApplications = ApplicationList.filterApplications(
+                testList,
+                FilterCriteria.forText(FilterCriteria.Field.ROLE, "engineer"));
+
+        assertEquals(1, filteredApplications.size());
+        assertEquals("Software Engineer Intern", filteredApplications.get(0).getRole());
+    }
+
+    @Test
     public void filterApplications_statusCriterion_returnsFilteredList() throws InternTrackException {
         ArrayList<Application> testList = new ArrayList<>();
         ApplicationList.addApplication(testList, "c/Google r/Intern");
@@ -161,6 +189,21 @@ public class ApplicationListTest {
 
         assertEquals(1, filteredApplications.size());
         assertEquals("Applied", filteredApplications.get(0).getStatus());
+    }
+
+    @Test
+    public void filterApplications_textCriterion_archivedApplicationExcluded() throws InternTrackException {
+        ArrayList<Application> testList = new ArrayList<>();
+        ApplicationList.addApplication(testList, "c/Meta Platforms r/SWE");
+        ApplicationList.addApplication(testList, "c/Meta AI r/Research Engineer");
+        ApplicationList.archiveApplication(testList, 1);
+
+        ArrayList<Application> filteredApplications = ApplicationList.filterApplications(
+                testList,
+                FilterCriteria.forText(FilterCriteria.Field.COMPANY, "meta"));
+
+        assertEquals(1, filteredApplications.size());
+        assertEquals("Meta AI", filteredApplications.get(0).getCompany());
     }
 
     @Test

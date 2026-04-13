@@ -15,7 +15,7 @@ edit 123213
 edit 5 s/Rejected
 list
 filter r/Teaching Assistant
-filter c/Micron
+filter c/cro
 filter ct/Prof Xavier
 filter d/2025-01-01
 filter s/Pending

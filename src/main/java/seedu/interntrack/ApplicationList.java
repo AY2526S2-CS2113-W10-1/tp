@@ -2,6 +2,7 @@ package seedu.interntrack;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -132,7 +133,7 @@ public class ApplicationList {
                 continue;
             }
             String applicationValue = getTextFieldValue(application, criteria.getField());
-            if (applicationValue != null && applicationValue.equalsIgnoreCase(criteria.getTextValue())) {
+            if (matchesTextCriterion(applicationValue, criteria.getTextValue())) {
                 filteredApplications.add(application);
             }
         }
@@ -458,6 +459,21 @@ public class ApplicationList {
         default:
             return null;
         }
+    }
+
+    /**
+     * Checks whether an application's text field contains the filter input, ignoring case.
+     *
+     * @param applicationValue The text field value from the application.
+     * @param criterionValue   The text entered by the user for filtering.
+     * @return True if the application value contains the criterion value, ignoring case.
+     */
+    private static boolean matchesTextCriterion(String applicationValue, String criterionValue) {
+        if (applicationValue == null || criterionValue == null) {
+            return false;
+        }
+
+        return applicationValue.toLowerCase(Locale.ROOT).contains(criterionValue.toLowerCase(Locale.ROOT));
     }
 
     /**
