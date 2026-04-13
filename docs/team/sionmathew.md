@@ -18,66 +18,84 @@ My contributions span multiple core components including command handling, parsi
 
 ### Enhancements implemented
 
-#### 1. Edit Command (Core Feature)
-- Designed and implemented a flexible `edit` command supporting partial updates using prefixed inputs.
-- Introduced an `EditDetails` abstraction to encapsulate optional updates cleanly.
-- Implemented validation for duplicate prefixes, invalid inputs, and empty fields before model mutation.
-- Integrated across Parser, ApplicationList, Storage, and UI components.
-- Added unit tests and defensive checks (logging, assertions).
+#### 1. Edit Command
+- Implemented a flexible `edit` command supporting partial updates via prefix-based inputs
+- Introduced `EditDetails` to encapsulate optional fields and maintain clean separation between parsing and model logic
+- Added validation for duplicate prefixes, invalid inputs, and empty fields before applying updates
+- Integrated across Parser, ApplicationList, Storage, and UI with defensive checks (logging, assertions) and unit tests
 
-**Highlights:**
-- Required careful design to support multiple optional fields while preserving separation of concerns.
-- Ensured scalability of the command as additional editable fields can be added without modifying method signatures.
-
-**PRs:** [#14](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/14), [#22](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/22)
+**PRs:** #14, #22
 
 ---
 
-#### 2. Undo Command (Core Feature)
-- Designed and implemented a snapshot-based undo mechanism.
-- Used deep copy logic to preserve historical states and prevent reference sharing.
-- Integrated undo support across all modifying commands (`add`, `edit`, `delete`, `archive`, `unarchive`).
-- Ensured consistency between in-memory state and persisted storage.
+#### 2. Undo Command
+- Implemented snapshot-based undo using deep copies to preserve previous states
+- Integrated undo across all modifying commands (`add`, `edit`, `delete`, `archive`, `unarchive`)
+- Ensured consistency between in-memory data and persisted storage
 
-**Highlights:**
-- Required system-wide integration and careful handling of edge cases (e.g., empty history).
-- Demonstrates understanding of state management and data integrity in CLI applications.
-
-**PR:** [#34](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/34)
+**PR:** #34
 
 ---
 
 #### 3. Archive / Unarchive Feature
-- Implemented soft-delete functionality using an `isArchived` flag.
-- Designed archive system to preserve data while excluding archived entries from active operations.
-- Integrated seamlessly with filtering, listing, sorting, and undo functionality.
+- Implemented soft-delete using an `isArchived` flag to retain data while excluding archived entries from active workflows
+- Extended archive handling across multiple components including listing, filtering, sorting, and undo
+- Modified related behaviours (e.g., summary and list outputs) to correctly account for archived entries
+- Ensured compatibility with all existing commands without introducing duplicated logic or inconsistencies
+- Ensured archived entries are consistently handled across all user-facing commands
 
-**Highlights:**
-- Required design trade-off between soft delete vs hard delete.
-- Ensured compatibility with existing commands without duplicating logic.
+**PR:** #87
 
 ---
-
 ### Contributions to the User Guide
-- Authored sections for:
-    - `archive`
-    - `unarchive`
-    - `listarchived`
-- Provided clear command formats, examples, and expected outputs.
-- Ensured consistency and readability through structured formatting.
 
+I contributed extensively to the User Guide by designing clear, structured, and user-friendly documentation for both core and extended features.
+
+**Commands Documented**
+- `edit`
+- `undo`
+- `archive`
+- `unarchive`
+- `listarchived`
+
+**Key Contributions**
+- Defined precise command formats using consistent prefix-based syntax
+- Provided realistic examples and expected outputs for each command
+- Documented edge cases (e.g., invalid indices, empty undo history, duplicate fields)
+- Ensured consistency in tone, formatting, and structure across all command sections
+
+**Impact**
+- Improved usability by making command behaviour explicit and predictable
+- Enabled users to confidently use advanced features such as partial edits and undo operations
 ---
 
 ### Contributions to the Developer Guide
-- Wrote and refined major sections of the DG, including:
-    - Parser component design and class diagram
-    - Implementation of `edit`, `undo`, and archive features
-- Designed and corrected UML diagrams:
-    - Sequence diagrams for `edit`, `undo`, and archive workflows
-    - Class diagram for Parser component
-- Ensured diagrams follow strict SE-EDU UML conventions (method-based arrows, correct abstraction level).
 
-**PRs:** [#24](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/24), [#40](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/40), [#51](https://github.com/AY2526S2-CS2113-W10-1/tp/pull/51)
+I led the design and refinement of key sections of the Developer Guide, focusing on both architectural clarity and correctness of implementation details.
+
+**Component Design**
+- Documented the Parser component, including its responsibilities, method structure, and relationships with domain classes.
+- Designed and added a class diagram to illustrate object creation responsibilities (e.g., `Application`, `EditDetails`, `FilterCriteria`) and exception handling.
+
+**Feature Implementation Documentation**
+- Authored detailed implementation sections for:
+    - `edit` command (partial update design using `EditDetails`)
+    - `undo` command (snapshot-based state restoration using deep copies)
+    - archive/unarchive features (soft-delete design and system integration)
+- Explained internal workflows, design decisions, and trade-offs (e.g., snapshot vs command-based undo).
+
+**UML Diagrams**
+- Designed and corrected multiple sequence diagrams (`edit`, `undo`, archive) to strictly follow SE-EDU UML conventions:
+    - Method-level calls instead of descriptive text
+    - Correct activation bars and return arrows
+    - Appropriate abstraction level (focusing on inter-component interactions)
+- Ensured diagrams were both technically accurate and easy to interpret.
+
+**Impact**
+- Improved the clarity and correctness of the DG, making it easier for future developers to understand system behavior and design decisions.
+- Ensured all diagrams and explanations align with SE-EDU standards, avoiding common UML notation errors.
+
+**PRs:** #24, #40, #51, #58, #150
 
 ---
 
