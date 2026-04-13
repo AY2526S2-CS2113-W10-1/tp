@@ -285,7 +285,9 @@ You have 2 applications matching status Pending.
 
 ## 6. View applications with upcoming deadlines: `remind`
 
-Shows applications with deadlines within the next N days. 
+Shows applications with deadlines within the next N days, starting from today onwards.
+
+**Important:** Only applications with deadlines on or after today are shown. Applications with past deadlines (even if recently expired) are **not** displayed, regardless of the N value. This ensures you focus on active opportunities rather than expired applications.
 
 It will throw error if the day specified is invalid(negative, not integer) or too big(more than 32 bits).
 
@@ -297,7 +299,7 @@ remind [DAYS]
 
 Parameters
 
-- `[DAYS]` : Number of days to look ahead (optional, defaults to 7)
+- `[DAYS]` : Number of days to look ahead from today (optional, defaults to 7)
 
 Examples
 
@@ -305,13 +307,13 @@ Examples
 remind
 ```
 
-Shows applications due in the next 7 days.
+Shows applications due in the next 7 days (from today onwards).
 
 ```
 remind 3
 ```
 
-Shows applications due in the next 3 days.
+Shows applications due in the next 3 days (from today onwards).
 
 Example output
 
@@ -326,6 +328,8 @@ If there are no applications with upcoming deadlines:
 ```
 No applications due in the next 3 days.
 ```
+
+**Note on Past Deadlines:** Applications with deadlines before today are excluded from the reminder. For example, if you have an application with deadline 2025-04-12, and it is 2026-04-13 today, it will not appear in any `remind` command regardless of whether you use `remind 1`, `remind 365`, or any other N value.
 
 ---
 
