@@ -16,7 +16,7 @@ Got it. I've added this application:
 Now you have 2 applications in the list.
 ____________________________________________________________
 ____________________________________________________________
-Date must be in YYYY-MM-DD format.
+Date must be in YYYY-MM-DD format.Invalid month: 33. Month must be between 1 and 12.
 ____________________________________________________________
 ____________________________________________________________
 Contact name cannot be empty.

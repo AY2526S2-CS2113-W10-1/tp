@@ -15,7 +15,10 @@
    - [7. Sort applications: `sort`](#7-sort-applications-sort)
    - [8. Undo the most recent change: `undo`](#8-undo-the-most-recent-change-undo)
    - [9. Get summary: `summary`](#9-get-summary-summary)
-   - [10. Exit the application: `bye`](#10-exit-the-application-bye)
+   - [10. Archive an application: `archive`](#10-archive-an-application-archive)
+   - [11. Restore an archived application: `unarchive`](#11-restore-an-archived-application-unarchive)
+   - [12. View archived applications: `listarchived`](#12-view-archived-applications-listarchived)
+   - [13. Exit the application: `bye`](#13-exit-the-application-bye)
 5. [FAQ](#faq)
 6. [Command Summary](#command-summary)
 
@@ -66,6 +69,34 @@ InternTrack enforces strict command formats for certain commands such as `archiv
 
 * The pipe character `|` is **not allowed** in any text input fields (company, role, contact, deadline). Using this character will result in an error message. Please use alternative characters such as `/`, `&`, or `-` instead.
 
+### Date Format Constraints
+
+- All dates must be in **YYYY-MM-DD** format (ISO-8601 standard). The date must be a valid calendar date.
+- Invalid dates such as `2025-13-45` (month 13 does not exist) or `2025-02-30` (February 30 does not exist) will be rejected with an error message.
+- **Past dates are allowed**: You can add or edit applications with deadlines in the past. This is intentional, as the application allows you to track historical applications. However, the `remind` command filters out past deadlines to focus on active opportunities.
+
+### Whitespace Handling
+
+When you save an application, InternTrack automatically normalizes whitespace in all text fields (company name, role, contact, status):
+
+**What happens:**
+
+- Multiple consecutive spaces, tabs, or newlines are collapsed into **single spaces**
+- Leading and trailing whitespace is removed
+
+**Examples:**
+
+- Input: `c/samsung           electronics` → Saved as: `samsung electronics`
+- Input: `c/  Google  Inc  ` → Saved as: `Google Inc`
+- Input: `r/Product    Research` → Saved as: `Product Research`
+
+**What is NOT changed:**
+
+- Single spaces between words are preserved
+- The order and content of words remain unchanged
+
+This normalization applies to all text input fields in add, edit, and filter commands to ensure consistent, clean data storage.
+
 ---
 
 # Commands
@@ -94,6 +125,8 @@ Deadline format
 ```
 YYYY-MM-DD
 ```
+
+Constraints: Must be a valid calendar date. Past dates are allowed. Invalid dates (e.g., month 13, February 30) will be rejected.
 
 Examples
 
@@ -192,7 +225,7 @@ Parameters
 - `INDEX` : Index of the application shown in the list
 - `c/COMPANY` : Updated company name
 - `r/ROLE` : Updated role name
-- `d/DEADLINE` : Updated deadline in `YYYY-MM-DD` format
+- `d/DEADLINE` : Updated deadline in `YYYY-MM-DD` format. Must be a valid calendar date. Past dates are allowed.
 - `ct/CONTACT` : Updated recruiter or HR contact
 - `s/STATUS` : Updated status value
 

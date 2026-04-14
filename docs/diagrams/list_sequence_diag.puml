@@ -1,7 +1,7 @@
 @startuml
 actor User
-participant ":Ui" as Ui
-participant ":InternTrack" as InternTrack
+participant "Ui" as Ui<<class>>
+participant "InternTrack" as InternTrack<<class>>
 
 User -> Ui : list
 Ui->InternTrack : handleListCommand()
