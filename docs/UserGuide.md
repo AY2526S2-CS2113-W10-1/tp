@@ -123,6 +123,11 @@ InternTrack automatically detects and prevents duplicate applications from being
 - **Contact**: Contact person is treated as a metadata attribute of an application, not a duplicate criterion. Different recruiters at the same company for the same role represent the same application position, not separate opportunities.
 - **Status**: Status is never checked for duplicates since all new applications automatically start as "Pending"
 
+**Important Note on Archived Applications:**
+- Duplicate detection scans your **entire tracker**, including 
+both active and archived applications. 
+- You cannot add a new application if an identical one is hidden in your archive. If your `add` command is rejected as a duplicate but you don't see it in your active list, use the `listarchived` command to locate it.
+
 **Examples of Duplicate Detection:**
 
 | Scenario | First Application | Second Application | Result    |
@@ -199,6 +204,9 @@ Notes
 - For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or the custom statuses you set.
 - The `INDEX` refers to the position shown in the **active applications list (`list`)**, not the full internal list.
 - Archived applications cannot be edited directly. You must first unarchive them.
+- **Duplicate Protection:** The `edit` command strictly follows 
+the exact same duplicate detection rules as the `add` command. If your proposed edits would cause the application to become a duplicate
+of another existing application (including archived ones), the edit will be safely blocked to protect your data integrity.
 ```
 edit 2 s/Accepted
 ```
@@ -277,9 +285,12 @@ Notes
 - The command accepts exactly one field per use.
 - Text matching for company, role, contact, and status is case-insensitive and matches substrings.
 - For `d/DEADLINE`, InternTrack shows applications with deadlines on or before the specified date.
-- For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or you custom statuses you set.
+- For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or the custom statuses you set.
+- **Persistent Indexing:** The numbers shown next to the filtered applications represent their actual index 
+in the main active `list`. You do not need to type `list` again; you can immediately use the displayed number 
+for your `edit`, `delete`, or `archive` commands.
 
-Examples
+Examples:
 
 ```
 filter s/Pending
@@ -303,8 +314,8 @@ Example output
 
 ```
 You have 2 applications matching status Pending.
-1. Backend Intern at Shopee is Pending. Apply by 2026-04-03.
-2. SWE Intern at Google is Pending.
+2. Backend Intern at Shopee is Pending. Apply by 2026-04-03.
+5. SWE Intern at Google is Pending.
 ```
 
 ---
@@ -346,7 +357,7 @@ Example output
 ```
 You have 2 applications due in the next 3 days (up to 2026-04-04).
 1. Software Engineer at Google is Pending. Apply by 2026-04-03.
-2. Data Analyst at Microsoft is Pending. Apply by 2026-04-02.
+4. Data Analyst at Microsoft is Pending. Apply by 2026-04-02.
 ```
 
 If there are no applications with upcoming deadlines:
@@ -389,6 +400,9 @@ Optional flags
 
 - `DESC` : Sort in descending order
 - `NONNULL` : Exclude entries where the chosen field is null
+
+Notes
+- **Persistent Indexing:** Even though the visual order of the applications changes on your screen, the index numbers printed next to each application remain tied to their original position in the main active list. You can safely use these exact numbers to `edit` or `delete` them without needing to run `list` again.
 
 Examples
 
