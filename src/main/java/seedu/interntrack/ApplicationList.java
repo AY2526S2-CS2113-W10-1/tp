@@ -78,7 +78,7 @@ public class ApplicationList {
             throw new InternTrackException("Provide at least one field to edit.");
         }
 
-        Application application = getApplicationByIndex(userApplications, index);
+        Application application = getActiveApplicationByIndex(userApplications, index);
 
         if (editDetails.getCompany() != null) {
             application.setCompany(editDetails.getCompany());
@@ -199,7 +199,7 @@ public class ApplicationList {
      */
     public static Application archiveApplication(ArrayList<Application> userApplications, int index)
             throws InternTrackException {
-        Application application = getApplicationByIndex(userApplications, index);
+        Application application = getActiveApplicationByIndex(userApplications, index);
         ensureNotArchived(application);
 
         application.setArchived(true);
@@ -217,11 +217,30 @@ public class ApplicationList {
      */
     public static Application unarchiveApplication(ArrayList<Application> userApplications, int index)
             throws InternTrackException {
-        Application application = getApplicationByIndex(userApplications, index);
+        Application application = getArchivedApplicationByIndex(userApplications, index);
         ensureArchived(application);
 
         application.setArchived(false);
         logger.info("Unarchived application at index " + index + ": " + application);
+        return application;
+    }
+
+    /**
+     * Deletes an active application using its 1-based displayed index from the active applications list.
+     *
+     * @param userApplications The full list containing all applications.
+     * @param index            The 1-based index from the active applications view.
+     * @return The removed active application.
+     * @throws InternTrackException If there are no active applications or the index is invalid.
+     */
+    public static Application deleteActiveApplication(ArrayList<Application> userApplications, int index)
+            throws InternTrackException {
+        Application application = getActiveApplicationByIndex(userApplications, index);
+
+        boolean wasRemoved = userApplications.remove(application);
+        assert wasRemoved : "Active application selected for deletion should exist in the full list";
+
+        logger.info("Deleted active application at index " + index + ": " + application);
         return application;
     }
 
@@ -521,6 +540,30 @@ public class ApplicationList {
     }
 
     /**
+     * Validates that the given 1-based index is within range for a displayed application list.
+     *
+     * @param displayedApplications The visible application list being indexed.
+     * @param index                 The 1-based index to validate.
+     * @param emptyListMessage      The message to show when the visible list is empty.
+     * @param outOfRangeMessage     The message to show when the index is out of range.
+     * @throws InternTrackException If the list is empty or the index is out of range.
+     */
+    private static void validateDisplayedIndex(ArrayList<Application> displayedApplications, int index,
+                                               String emptyListMessage, String outOfRangeMessage)
+            throws InternTrackException {
+        if (displayedApplications.isEmpty()) {
+            logger.warning(emptyListMessage);
+            throw new InternTrackException(emptyListMessage);
+        }
+
+        if (index < 1 || index > displayedApplications.size()) {
+            logger.warning("Displayed application index out of range: " + index
+                    + ", visible list size: " + displayedApplications.size());
+            throw new InternTrackException(outOfRangeMessage);
+        }
+    }
+
+    /**
      * Retrieves an application by its 1-based index after validating it.
      *
      * @param userApplications The application list.
@@ -537,6 +580,46 @@ public class ApplicationList {
     }
 
     /**
+     * Retrieves an active application by its 1-based displayed index from the active applications list.
+     *
+     * @param userApplications The full application list.
+     * @param index            The 1-based index from the active applications view.
+     * @return The active application at the given displayed index.
+     * @throws InternTrackException If there are no active applications or the index is invalid.
+     */
+    private static Application getActiveApplicationByIndex(ArrayList<Application> userApplications, int index)
+            throws InternTrackException {
+        ArrayList<Application> activeApplications = getActiveApplications(userApplications);
+        validateDisplayedIndex(activeApplications, index,
+                "There are no active applications to select. Use add to create an application, "
+                        + "or list to view active applications.",
+                "Active application index is out of range. Use list to view the available "
+                        + "active application indices.");
+        Application application = activeApplications.get(index - 1);
+        assert application != null : "Active application should not be null after index validation";
+        return application;
+    }
+
+    /**
+     * Retrieves an archived application by its 1-based displayed index from the archived applications list.
+     *
+     * @param userApplications The full application list.
+     * @param index            The 1-based index from the archived applications view.
+     * @return The archived application at the given displayed index.
+     * @throws InternTrackException If there are no archived applications or the index is invalid.
+     */
+    private static Application getArchivedApplicationByIndex(ArrayList<Application> userApplications, int index)
+            throws InternTrackException {
+        ArrayList<Application> archivedApplications = getArchivedApplications(userApplications);
+        validateDisplayedIndex(archivedApplications, index,
+                "There are no archived applications to select.",
+                "Archived application index is out of range. Use listarchived to view archived applications.");
+        Application application = archivedApplications.get(index - 1);
+        assert application != null : "Archived application should not be null after index validation";
+        return application;
+    }
+
+    /**
      * Ensures that an application is not archived before performing an operation.
      *
      * @param application The application to check.
@@ -544,8 +627,9 @@ public class ApplicationList {
      */
     private static void ensureNotArchived(Application application) throws InternTrackException {
         if (application.isArchived()) {
-            logger.warning("Operation failed: application is already archived.");
-            throw new InternTrackException("Application is already archived.");
+            logger.warning("Operation failed because the selected application is already archived.");
+            throw new InternTrackException(
+                    "The selected application is already archived. Use listarchived to view archived applications.");
         }
     }
 
@@ -557,8 +641,9 @@ public class ApplicationList {
      */
     private static void ensureArchived(Application application) throws InternTrackException {
         if (!application.isArchived()) {
-            logger.warning("Operation failed: application is not archived.");
-            throw new InternTrackException("Application is not archived.");
+            logger.warning("Operation failed because the selected application is not archived.");
+            throw new InternTrackException(
+                    "The selected application is not archived. Use list to view active applications.");
         }
     }
 }

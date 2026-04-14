@@ -50,7 +50,9 @@ public class ApplicationListTest {
                 InternTrackException.class,
                 () -> ApplicationList.addApplication(testList, testLine)
         );
-        assertEquals("Date must be in YYYY-MM-DD format.", exception.getMessage());
+        String expectedMessage = "Date must be in YYYY-MM-DD format."
+                + "Invalid month: 30. Month must be between 1 and 12.";
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
@@ -131,7 +133,8 @@ public class ApplicationListTest {
                 () -> ApplicationList.editApplication(testList, 2,
                         new EditDetails("Meta", null, null, null, null)));
 
-        assertEquals("Application index is out of range.", exception.getMessage());
+        assertEquals("Active application index is out of range. Use list to view the available "
+                + "active application indices.", exception.getMessage());
     }
 
     @Test

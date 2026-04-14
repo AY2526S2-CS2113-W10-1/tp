@@ -357,44 +357,65 @@ This design prioritizes **data integrity** and **user safety** over strict parsi
 **Rationale for Current Choice:** The plain-text pipe-delimited format is appropriate for an early-stage student project. It provides a good balance between simplicity, readability, and performance. If future requirements demand support for complex nested data or significantly larger datasets, migrating to JSON or a database would be straightforward.
 
 ---
-
 ### Parser component
 
 #### Overview
 
-The `Parser` component is responsible for interpreting user input and converting it into actionable commands. It validates user input and constructs domain objects (like `Application` instances) that represent the user's intentions.
+The `Parser` component is responsible for interpreting user input and converting it into structured data that can be processed by the system.
+
+It validates input syntax and constructs domain objects such as `Application`, `EditDetails`, and `FilterCriteria`. These objects are then passed to other components for further processing.
+
+---
+
+#### Class Diagram
+
+![parser_class_diag.png](diagrams/parser_class_diag.png)
+
+The `Parser` class provides a collection of static methods for parsing different command inputs.
+
+Rather than maintaining long-term associations with other classes, the parser interacts with domain objects transiently during parsing. These interactions are modelled as dependencies:
+
+- `Parser` creates `Application`, `EditDetails`, and `FilterCriteria` objects based on user input.
+- `Parser` throws `InternTrackException` when input validation fails.
+
+As these objects are not stored within the parser but only used temporarily, dependency relationships are used instead of associations.
+
+---
 
 #### Design Considerations
 
-##### Aspect 1: Where the Application Object is Instantiated
+##### Aspect: Where the `Application` object is instantiated
 
-**Alternative 1 (Current Choice):** Instantiate the complete `Application` object inside the `Parser.createApplication()` method, which is called by `ApplicationList.addApplications()`.
-
-*Pros:*
-- Parsing logic is centralized and reusable across commands
-- `ApplicationList` is insulated from parsing concerns; it only knows about domain objects
-- Clear separation of concerns between input parsing and model management
-- Validation happens at a single point, reducing the risk of inconsistency
-
-*Cons:*
-- Parser is tightly coupled to the `Application` class structure
-- Changes to the `Application` constructor signature require updating the parser
-- If multiple ways to create `Application` objects are needed, code duplication may occur
-
-**Alternative 2:** Pass raw, validated strings directly to `ApplicationList.addApplications()` and allow it to instantiate the `Application` object during the add operation.
+**Alternative 1 (Current Choice):** Instantiate the `Application` object within `Parser.createApplication()`.
 
 *Pros:*
-- Reduces coupling between the parser and the `Application` model
-- `ApplicationList` has more control and flexibility over object instantiation
-- Easier to support alternative `Application` creation paths
+- Centralises parsing and validation logic
+- Keeps the model layer independent of input format
+- Ensures consistent object construction across commands
+- Improves reusability of parsing logic
 
 *Cons:*
-- Violates the Single Responsibility Principle by mixing input parsing with model logic
-- Duplicates validation logic if applications are created in multiple places
-- Makes testing harder because the model layer must now understand input syntax
-- Reduced code reusability across commands that need to create applications
+- Introduces coupling between `Parser` and the `Application` class structure
+- Changes to the `Application` constructor require updates to the parser
 
-**Rationale for Current Choice:** Centralizing instantiation in the parser improves testability and maintainability. Each component has a clear responsibility: the parser handles user input syntax, and the model layer handles data integrity.
+---
+
+**Alternative 2:** Pass validated raw input to the model layer and instantiate `Application` there.
+
+*Pros:*
+- Reduces coupling between parser and model
+- Allows greater flexibility in object construction
+
+*Cons:*
+- Violates separation of concerns by mixing parsing with model logic
+- May duplicate validation logic across components
+- Reduces reusability of parsing logic
+
+---
+
+**Rationale for Current Choice:**
+
+Instantiating domain objects within the parser ensures a clear separation of responsibilities. The parser handles input interpretation and validation, while the model layer focuses on data management. This improves maintainability and reduces the likelihood of inconsistent object creation.
 
 ---
 
@@ -927,19 +948,11 @@ This approach keeps validation within the model while command interpretation rem
 ![sort\_sequence\_diag.png](diagrams/sort_sequence_diag.png)
 
 ---
-
 ### Undo feature
 
-The `undo` command allows users to revert the most recent modification made to the application list.
+The `undo` command allows users to revert the most recent successful command that modified the application list.
 
-If previous there is no supported commands for undo, it will do nothing.
-
-Supported commands:
-- add
-- edit
-- delete
-- archive
-- unarchive
+Commands that modify the application list (e.g., `add`, `edit`, `delete`, `archive`, and `unarchive`) are supported by the undo mechanism.
 
 ---
 
@@ -947,31 +960,35 @@ Supported commands:
 
 Undo is implemented using a snapshot-based state restoration mechanism.
 
-Before executing any modifying command:
+Before executing any command that modifies the application list:
 
-1. A deep copy of the current `userApplications` list is created
-2. The snapshot is pushed onto an undo history stack
+1. A deep copy of the current `userApplications` list is created.
+2. The copied snapshot is pushed onto the `undoHistory` stack.
 
 When `undo` is executed:
 
-1. The most recent snapshot is popped from the stack
-2. The current list is cleared and replaced with the snapshot
-3. The restored state is saved to storage
+1. The most recent snapshot is popped from the `undoHistory` stack.
+2. The current `userApplications` list is cleared and replaced with the popped snapshot.
+3. The restored state is saved to storage to keep the in-memory state and persisted state consistent.
+4. A success message is displayed to the user.
+
+This design allows the application to restore the entire previous state directly, without requiring separate reversal logic for each supported command.
 
 ---
 
 #### Deep Copy Mechanism
 
-A deep copy is used to prevent reference sharing between states.
+A deep copy is used to prevent reference sharing between snapshots.
 
-Each `Application` object is copied individually, ensuring that previous states remain unaffected by future changes.
+Each `Application` object is copied individually before being stored in the undo history. This ensures that previously saved states remain unaffected by later modifications to the current application list.
 
 ---
 
 #### Error Handling
 
-- If no previous state exists, an error message is shown:
-  "No command to undo."
+If there is no previous state available to restore, the command fails and the user is shown the message:
+
+`No command to undo.`
 
 ---
 
@@ -982,49 +999,62 @@ Each `Application` object is copied individually, ensuring that previous states 
 **Alternative 1 (Current Choice): Snapshot-based restoration**
 
 *Pros:*
-- Simple and reliable
-- Independent of command logic
-- Guarantees correct state restoration
+- Simple to implement and reason about
+- Independent of individual command logic
+- Restores the full previous state reliably
+- Easy to extend to additional mutating commands
 
 *Cons:*
-- Higher memory usage
-
----
+- Requires additional memory to store snapshots
 
 **Alternative 2: Command-based reversal**
 
 *Pros:*
 - More memory efficient
+- Stores only the information needed to reverse each command
 
 *Cons:*
-- Complex implementation
-- Each command requires custom undo logic
-
----
+- More complex to implement and maintain
+- Each mutating command requires its own custom undo logic
+- Higher risk of inconsistencies if reversal logic is incomplete or incorrect
 
 **Rationale for Current Choice:**
 
-The snapshot approach ensures correctness and simplicity, which is more suitable for a small-scale application.
+The snapshot-based approach prioritises correctness and simplicity, which is more suitable for this application than optimising memory usage.
 
 ---
+
 ##### Sequence Diagram: Undo Command
 
-![undo\_sequence\_diag.png](diagrams/undo_sequence_diag.png)
+![undo_sequence_diag.png](diagrams/undo_sequence_diag.png)
+
+The sequence diagram above illustrates the successful execution of the `undo` command.
+
+For clarity, the internal collection operations used to restore the previous snapshot are abstracted 
+within `handleUndoCommand(...)`.
+
+The error case where there is no command available to undo is handled separately in the implementation logic.
+
 
 ---
 ### Archive feature
 
 The `archive` command allows users to mark an application as archived without removing it from the system.
 
-Archived applications are retained in storage but excluded from active views such as `list`, `filter`, and `sort`.
+Archived applications are excluded from commands that operate on active applications, such as `list`, `filter`, and `sort`, but remain stored and can be restored later.
 
 #### Implementation
 
 1. `InternTrack.handleArchiveCommand()` parses the index using `Parser.parseArchiveIndex()`.
 2. The current state is saved using `saveStateForUndo()` to support undo.
-3. `ApplicationList.archiveApplication()` sets the `isArchived` flag to `true`.
+3. `ApplicationList.archiveApplication()` sets the `isArchived` flag of the specified application to `true`.
 4. `Storage.saveApplications()` persists the updated state.
-5. `Ui.printArchiveApplication()` displays confirmation to the user.
+5. `Ui.printArchiveApplication()` displays a confirmation message to the user.
+
+#### Error Handling
+
+- If the index is invalid or out of range, an error is shown.
+- If the application is already archived, the command fails with an appropriate message.
 
 #### Design Considerations
 
@@ -1035,10 +1065,10 @@ Archived applications are retained in storage but excluded from active views suc
 *Pros:*
 - Prevents accidental data loss
 - Allows restoration using `unarchive`
-- Works well with undo functionality
+- Integrates well with undo functionality
 
 *Cons:*
-- Requires additional filtering logic to exclude archived items
+- Requires additional filtering logic to exclude archived applications
 
 **Alternative 2: Hard delete**
 
@@ -1052,21 +1082,39 @@ Archived applications are retained in storage but excluded from active views suc
 
 **Rationale for Current Choice:**
 
-Using an archive flag provides a safer and more flexible approach by preserving data while still allowing users to organize their applications effectively.
+Using an archive flag provides a safer and more flexible approach by preserving data while still allowing users to organise their applications effectively.
 
+##### Sequence Diagram: Archive Command
+
+![archive_sequence_diag.png](diagrams/archive_sequence_diag.png)
+
+The sequence diagram above illustrates the successful execution of the `archive` command.
+
+First, `InternTrack.handleArchiveCommand()` requests `Parser.parseArchiveIndex()` to parse and validate the target index from the raw user input. After the index is obtained, `saveStateForUndo(...)` is called so that the previous state can be restored later if the user executes `undo`.
+
+Next, `InternTrack` delegates the archival logic to `ApplicationList.archiveApplication(...)`, which validates the target application and updates its archived state. Once the application has been successfully archived, `Storage.saveApplications(...)` is invoked to persist the updated list to disk. Finally, `Ui.printArchiveApplication(...)` displays a confirmation message to the user.
+
+For clarity, the sequence diagram shows the successful execution path only. Error cases such as invalid indices or attempts to archive an already archived application are handled separately in the implementation logic.
+
+---
 ### Unarchive feature
 
 The `unarchive` command allows users to restore a previously archived application back to the active list.
 
-Unarchived applications will again appear in commands such as `list`, `filter`, and `sort`.
+Unarchived applications will again be included in commands such as `list`, `filter`, and `sort`.
 
 #### Implementation
 
-1. `InternTrack.handleUnarchiveCommand()` parses the index using `Parser.parseArchiveIndex()`.
+1. `InternTrack.handleUnarchiveCommand()` parses the index using `Parser.parseUnarchiveIndex()`.
 2. The current state is saved using `saveStateForUndo()` to support undo.
-3. `ApplicationList.unarchiveApplication()` sets the `isArchived` flag to `false`.
+3. `ApplicationList.unarchiveApplication()` sets the `isArchived` flag of the specified application to `false`.
 4. `Storage.saveApplications()` persists the updated state.
-5. `Ui.printUnarchiveApplication()` displays confirmation to the user.
+5. `Ui.printUnarchiveApplication()` displays a confirmation message to the user.
+
+#### Error Handling
+
+- If the index is invalid or out of range, an error is shown.
+- If the application is not archived, the command fails with an appropriate message.
 
 #### Design Considerations
 
@@ -1076,11 +1124,11 @@ Unarchived applications will again appear in commands such as `list`, `filter`, 
 
 *Pros:*
 - Simple and efficient implementation
-- Maintains consistency with archive feature
-- Fully compatible with undo mechanism
+- Maintains consistency with the archive feature
+- Fully compatible with the undo mechanism
 
 *Cons:*
-- Requires additional checks to ensure only archived applications can be restored
+- Requires validation to ensure only archived applications can be restored
 
 **Alternative 2: Recreate application object**
 
@@ -1090,12 +1138,15 @@ Unarchived applications will again appear in commands such as `list`, `filter`, 
 *Cons:*
 - Unnecessary complexity
 - Risk of losing original metadata
-- Breaks consistency with archive design
+- Breaks consistency with the archive design
 
 **Rationale for Current Choice:**
 
 Toggling the archive flag provides a straightforward and consistent way to restore applications without duplicating data or introducing additional complexity.
 
+The control flow of `unarchive` is analogous to `archive`. The main difference is that `ApplicationList.unarchiveApplication(...)` restores the archived application by setting its archived state back to `false`.
+
+---
 ### Summary feature
 
 The `summary` command provides users with a high-level overview of their internship application progress, including quantitative metrics and time-sensitive reminders.

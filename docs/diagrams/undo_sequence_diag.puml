@@ -2,17 +2,15 @@
 hide footbox
 
 participant ":InternTrack" as InternTrack
-participant ":Ui" as Ui
 participant ":Storage" as Storage
+participant ":Ui" as Ui
 
 [-> InternTrack : handleCommand("undo", userApplications, undoHistory)
 activate InternTrack
 
 InternTrack -> InternTrack : handleUndoCommand(userApplications, undoHistory)
-activate InternTrack
-InternTrack -> InternTrack : pop previousState from undoHistory
-InternTrack -> InternTrack : clear userApplications
-InternTrack -> InternTrack : addAll(previousState)
+
+InternTrack -> InternTrack : restorePreviousState(userApplications, undoHistory)
 
 InternTrack -> Storage : saveApplications(userApplications)
 activate Storage
@@ -24,7 +22,7 @@ activate Ui
 Ui --> InternTrack
 deactivate Ui
 
-deactivate InternTrack
 [<-- InternTrack
 deactivate InternTrack
+
 @enduml

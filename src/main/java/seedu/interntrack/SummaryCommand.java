@@ -24,19 +24,21 @@ public class SummaryCommand {
             return;
         }
 
+        ArrayList<Application> activeApplications = ApplicationList.getActiveApplications(userApplications);
+        ArrayList<Application> archivedApplications = ApplicationList.getArchivedApplications(userApplications);
+
         System.out.println("   INTERNSHIP APPLICATION SUMMARY   ");
         System.out.println("------------------------------------");
 
-        // 1. Overall Progress (Total Count)
         System.out.println("Total Applications Tracked: " + userApplications.size());
+        System.out.println("Active Applications: " + activeApplications.size());
+        System.out.println("Archived Applications: " + archivedApplications.size());
         System.out.println();
 
-        // 2. Application Statuses Breakdown
-        printStatusBreakdown(userApplications);
+        printStatusBreakdown(activeApplications);
         System.out.println();
 
-        // 3. Upcoming Deadlines
-        printUpcomingDeadlines(userApplications, 7); // Looking ahead 7 days
+        printUpcomingDeadlines(activeApplications, 7);
     }
 
     /**
@@ -45,6 +47,11 @@ public class SummaryCommand {
     private static void printStatusBreakdown(ArrayList<Application> userApplications) {
         Map<String, Integer> statusCounts = new HashMap<>();
 
+        if (userApplications.isEmpty()) {
+            System.out.println("Status Overview (Active Only):");
+            System.out.println(" - No active applications to summarize.");
+            return;
+        }
         for (Application app : userApplications) {
             String status = app.getStatus();
 
@@ -54,7 +61,7 @@ public class SummaryCommand {
             statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
         }
 
-        System.out.println("Status Overview:");
+        System.out.println("Status Overview (Active Only):");
         for (Map.Entry<String, Integer> entry : statusCounts.entrySet()) {
             System.out.println(" - " + entry.getKey() + ": " + entry.getValue());
         }
@@ -64,7 +71,7 @@ public class SummaryCommand {
      * Helper method to find and print applications with deadlines approaching soon.
      */
     private static void printUpcomingDeadlines(ArrayList<Application> userApplications, int daysAhead) {
-        System.out.println("Upcoming Deadlines (Next " + daysAhead + " days):");
+        System.out.println("Upcoming Deadlines (Next " + daysAhead + " days, Active Only):");
 
         LocalDate today = LocalDate.now();
         LocalDate cutoffDate = today.plusDays(daysAhead);

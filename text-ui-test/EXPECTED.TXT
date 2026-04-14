@@ -16,7 +16,7 @@ Got it. I've added this application:
 Now you have 2 applications in the list.
 ____________________________________________________________
 ____________________________________________________________
-Date must be in YYYY-MM-DD format.
+Date must be in YYYY-MM-DD format.Invalid month: 33. Month must be between 1 and 12.
 ____________________________________________________________
 ____________________________________________________________
 Contact name cannot be empty.
@@ -36,7 +36,7 @@ You have applied for 3 roles
 3. Embedded at Micron is Pending. Apply by 2027-01-01.
 ____________________________________________________________
 ____________________________________________________________
-Invalid application index.
+Active application index is out of range. Use list to view the available active application indices.
 ____________________________________________________________
 ____________________________________________________________
 Application index must be greater than 0.
@@ -56,7 +56,7 @@ ____________________________________________________________
 Use format: edit INDEX [c/COMPANY] [r/ROLE] [d/DEADLINE] [ct/CONTACT] [s/STATUS]
 ____________________________________________________________
 ____________________________________________________________
-Application index is out of range.
+Active application index is out of range. Use list to view the available active application indices.
 ____________________________________________________________
 ____________________________________________________________
 You have applied for 3 roles
@@ -93,7 +93,7 @@ Filter command accepts exactly one field.
 ____________________________________________________________
 ____________________________________________________________
 Noted. I've removed this application:
-  1. Shopee - Backend Intern (Deadline: 2024-12-31, Contact: Johns, Status: Pending)
+  2. Shopee - Backend Intern (Deadline: 2024-12-31, Contact: Johns, Status: Pending)
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this application:
@@ -162,6 +162,76 @@ The application list has been sorted by status in ascending order.
 4. HE at NVIDIA is Pending. Apply by 2026-03-27. Contact with Prof X.
 5. Sales at Shopee is Pending. Apply by 2030-10-23. Contact with Prof Y.
 6. Marketing at Micron is Pending. Contact with Limux.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this application:
+  Google - Intern (Status: Pending)
+Now you have 7 applications in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this application:
+  Meta - Engineer (Status: Pending)
+Now you have 8 applications in the list.
+____________________________________________________________
+____________________________________________________________
+Nice! I've archived application 1:
+  [Archived] NUS School of Computing - Teaching Assistant (Contact: Prof Xavier, Status: Applied)
+____________________________________________________________
+____________________________________________________________
+You have applied for 7 roles
+1. Embedded at Micron is Pending. Apply by 2027-01-01.
+2. SE at ShopBack is Pending. Apply by 2025-11-11. Contact with Harim.
+3. HE at NVIDIA is Pending. Apply by 2026-03-27. Contact with Prof X.
+4. Sales at Shopee is Pending. Apply by 2030-10-23. Contact with Prof Y.
+5. Marketing at Micron is Pending. Contact with Limux.
+6. Intern at Google is Pending.
+7. Engineer at Meta is Pending.
+____________________________________________________________
+____________________________________________________________
+Done. I've undone the most recent change.
+____________________________________________________________
+____________________________________________________________
+You have applied for 8 roles
+1. Teaching Assistant at NUS School of Computing is Applied. Contact with Prof Xavier.
+2. Embedded at Micron is Pending. Apply by 2027-01-01.
+3. SE at ShopBack is Pending. Apply by 2025-11-11. Contact with Harim.
+4. HE at NVIDIA is Pending. Apply by 2026-03-27. Contact with Prof X.
+5. Sales at Shopee is Pending. Apply by 2030-10-23. Contact with Prof Y.
+6. Marketing at Micron is Pending. Contact with Limux.
+7. Intern at Google is Pending.
+8. Engineer at Meta is Pending.
+____________________________________________________________
+____________________________________________________________
+Nice! I've updated application 2:
+  Micron - Embedded (Deadline: 2027-01-01, Status: Applied)
+____________________________________________________________
+____________________________________________________________
+You have applied for 8 roles
+1. Teaching Assistant at NUS School of Computing is Applied. Contact with Prof Xavier.
+2. Embedded at Micron is Applied. Apply by 2027-01-01.
+3. SE at ShopBack is Pending. Apply by 2025-11-11. Contact with Harim.
+4. HE at NVIDIA is Pending. Apply by 2026-03-27. Contact with Prof X.
+5. Sales at Shopee is Pending. Apply by 2030-10-23. Contact with Prof Y.
+6. Marketing at Micron is Pending. Contact with Limux.
+7. Intern at Google is Pending.
+8. Engineer at Meta is Pending.
+____________________________________________________________
+____________________________________________________________
+Done. I've undone the most recent change.
+____________________________________________________________
+____________________________________________________________
+You have applied for 8 roles
+1. Teaching Assistant at NUS School of Computing is Applied. Contact with Prof Xavier.
+2. Embedded at Micron is Pending. Apply by 2027-01-01.
+3. SE at ShopBack is Pending. Apply by 2025-11-11. Contact with Harim.
+4. HE at NVIDIA is Pending. Apply by 2026-03-27. Contact with Prof X.
+5. Sales at Shopee is Pending. Apply by 2030-10-23. Contact with Prof Y.
+6. Marketing at Micron is Pending. Contact with Limux.
+7. Intern at Google is Pending.
+8. Engineer at Meta is Pending.
+____________________________________________________________
+____________________________________________________________
+Use format: undo
 ____________________________________________________________
 ____________________________________________________________
 Bye. Hope to see you again soon!

@@ -6,13 +6,11 @@ participant ":Parser" as Parser
 participant ":ApplicationList" as ApplicationList
 participant ":Ui" as Ui
 participant ":Storage" as Storage
-participant ":EditDetails" as EditDetails
 
 [-> InternTrack : handleCommand("edit ...", userApplications, undoHistory)
 activate InternTrack
 
 InternTrack -> InternTrack : handleEditCommand(line, userApplications, undoHistory)
-activate InternTrack
 
 InternTrack -> Parser : parseEditIndex(line)
 activate Parser
@@ -24,7 +22,7 @@ activate Parser
 create "editDetails:EditDetails" as EditDetails
 Parser -> EditDetails : EditDetails(company, role, deadline, contact, status)
 activate EditDetails
-EditDetails --> Parser
+EditDetails --> Parser : editDetails
 deactivate EditDetails
 Parser --> InternTrack : editDetails
 deactivate Parser
@@ -36,7 +34,7 @@ activate ApplicationList
 ApplicationList --> InternTrack : updatedApplication
 deactivate ApplicationList
 
-InternTrack -> Ui : printEditApplication(updatedApplication, index)
+InternTrack -> Ui : printEditApplication(updatedApplication, index, editDetails)
 activate Ui
 Ui --> InternTrack
 deactivate Ui
@@ -46,8 +44,6 @@ activate Storage
 Storage --> InternTrack
 deactivate Storage
 
-InternTrack --> InternTrack
-deactivate InternTrack
 [<-- InternTrack
 deactivate InternTrack
 @enduml

@@ -77,22 +77,26 @@ public class InternTrack {
             } else if (command.equals(DELETE_COMMAND)) {
                 handleDeleteCommand(trimmedLine, userApplications, undoHistory);
             } else if (command.equals(UNDO_COMMAND)) {
+                ensureNoArguments(trimmedLine, "Use format: undo");
                 handleUndoCommand(userApplications, undoHistory);
             } else if (command.equals(FILTER_COMMAND)) {
                 handleFilterCommand(trimmedLine, userApplications);
             } else if (command.equals(LIST_COMMAND)) {
+                ensureNoArguments(trimmedLine, "Use format: list");
                 handleListCommand(userApplications);
             } else if (command.equals(SORT_COMMAND)) {
                 handleSortCommand(trimmedLine, userApplications);
             } else if (command.equals(REMIND_COMMAND)) {
                 handleRemindCommand(trimmedLine, userApplications);
             } else if (command.equals(SUMMARY_COMMAND)) {
+                ensureNoArguments(trimmedLine, "Use format: summary");
                 handleSummaryCommand(userApplications);
             } else if (command.equals(ARCHIVE_COMMAND)) {
                 handleArchiveCommand(trimmedLine, userApplications, undoHistory);
             } else if (command.equals(UNARCHIVE_COMMAND)) {
                 handleUnarchiveCommand(trimmedLine, userApplications, undoHistory);
             } else if (command.equals(LIST_ARCHIVED_COMMAND)) {
+                ensureNoArguments(trimmedLine, "Use format: listarchived");
                 handleListArchivedCommand(userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
@@ -138,15 +142,12 @@ public class InternTrack {
             throws InternTrackException {
         int index = Parser.parseDeleteIndex(line);
 
-        if (index < 0 || index >= userApplications.size()) {
-            throw new InternTrackException("Invalid application index.");
-        }
-
         saveStateForUndo(userApplications, undoHistory);
 
-        Application removedApplication = userApplications.remove(index);
+        Application removedApplication =
+                ApplicationList.deleteActiveApplication(userApplications, index);
 
-        logger.log(Level.INFO, "Deleted application: "
+        logger.log(Level.INFO, "Deleted active application: "
                 + removedApplication.getCompany() + " - " + removedApplication.getRole());
 
         Ui.printDeleteApplication(removedApplication, index);
@@ -359,6 +360,23 @@ public class InternTrack {
             copiedList.add(new Application(application));
         }
         return copiedList;
+    }
+
+    /**
+     * Ensures that a command has no extra arguments beyond the command word.
+     *
+     * @param input       The raw input string.
+     * @param formatError The error message to throw if extra arguments are present.
+     * @throws InternTrackException If extra arguments are detected.
+     */
+    private static void ensureNoArguments(String input, String formatError)
+            throws InternTrackException {
+
+        String[] parts = input.trim().split("\\s+", 2);
+
+        if (parts.length > 1) {
+            throw new InternTrackException(formatError);
+        }
     }
 
     /**

@@ -33,3 +33,14 @@ sort by/ROLE DESC DESC DESC
 sort by/DEADLINE NONNULL DESC
 sort by/CONTACT NONNULL
 sort by/STATUS
+add c/Google r/Intern
+add c/Meta r/Engineer
+archive 1
+list
+undo
+list
+edit 2 s/Applied
+list
+undo
+list
+undo extra

@@ -51,14 +51,48 @@ java -jar InternTrack.jar
 * Items in **square brackets** are optional. Example: `[d/DEADLINE]`
 * Parameters can be given in **any order**. Example: `add c/Google r/Intern` is the same as `add r/Intern c/Google`.
 
+### Important: Command Strictness
+
+InternTrack enforces strict command formats for certain commands such as `archive`, `unarchive`, `delete`, and `undo`.
+
+- Extra unexpected text after a valid command will result in an error.
+- For example:
+   - `archive 1` is valid
+   - `archive 1 extra` is invalid
+- However, additional spaces are allowed:
+   - `archive    1` is valid
+
 ### Important: Restricted Characters
 
 * The pipe character `|` is **not allowed** in any text input fields (company, role, contact, deadline). Using this character will result in an error message. Please use alternative characters such as `/`, `&`, or `-` instead.
+
 ### Date Format Constraints
 
 - All dates must be in **YYYY-MM-DD** format (ISO-8601 standard). The date must be a valid calendar date.
 - Invalid dates such as `2025-13-45` (month 13 does not exist) or `2025-02-30` (February 30 does not exist) will be rejected with an error message.
 - **Past dates are allowed**: You can add or edit applications with deadlines in the past. This is intentional, as the application allows you to track historical applications. However, the `remind` command filters out past deadlines to focus on active opportunities.
+
+### Whitespace Handling
+
+When you save an application, InternTrack automatically normalizes whitespace in all text fields (company name, role, contact, status):
+
+**What happens:**
+
+- Multiple consecutive spaces, tabs, or newlines are collapsed into **single spaces**
+- Leading and trailing whitespace is removed
+
+**Examples:**
+
+- Input: `c/samsung           electronics` → Saved as: `samsung electronics`
+- Input: `c/  Google  Inc  ` → Saved as: `Google Inc`
+- Input: `r/Product    Research` → Saved as: `Product Research`
+
+**What is NOT changed:**
+
+- Single spaces between words are preserved
+- The order and content of words remain unchanged
+
+This normalization applies to all text input fields in add, edit, and filter commands to ensure consistent, clean data storage.
 
 ---
 
@@ -160,6 +194,11 @@ You have applied for 3 roles
 2. SWE Intern at Google is Pending.
 3. ML Intern at Meta is Pending.
 ```
+### Important Notes on Listing
+
+- The `list` command displays **only active (non-archived) applications**.
+- Archived applications are **not shown** in this list.
+- To view archived applications, use the `listarchived` command.
 
 ---
 
@@ -187,9 +226,9 @@ Notes
 - You must provide at least one field to update.
 - Each field can only be supplied once in the same command.
 - The application index must be greater than 0.
-- For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or you custom statuses you set.
-Example
-
+- For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or the custom statuses you set.
+- The `INDEX` refers to the position shown in the **active applications list (`list`)**, not the full internal list.
+- Archived applications cannot be edited directly. You must first unarchive them.
 ```
 edit 2 s/Accepted
 ```
@@ -236,6 +275,16 @@ Result
 ```
 Noted. I've removed this application.
 ```
+
+### Notes
+
+- The `INDEX` refers to the position shown in the **active applications list (`list`)**.
+- The `delete` command can only remove **active applications**.
+- Archived applications are not affected by `delete`.
+- To delete an archived application:
+   1. Use `listarchived` to locate it
+   2. Use `unarchive INDEX`
+   3. Then use `delete INDEX` from the active list
 
 ---
 
@@ -416,6 +465,10 @@ Result
 ```
 Done. I've undone the most recent change.
 ```
+### Notes
+
+- The `undo` command does not accept any additional parameters.
+- Commands such as `undo extra` are invalid and will result in an error.
 
 If there is nothing to undo, InternTrack will show an error message.
 
@@ -444,14 +497,28 @@ ____________________________________________________________
    INTERNSHIP APPLICATION SUMMARY   
 ------------------------------------
 Total Applications Tracked: 3
+Active Applications: 2
+Archived Applications: 1
 
-Status Overview:
- - Pending: 3
+Status Overview (Active Only):
+ - Pending: 2
 
-Upcoming Deadlines (Next 7 days):
+Upcoming Deadlines (Next 7 days, Active Only):
  - Amazon (Fullstack Developer) : Due in 4 days.
 ____________________________________________________________
 ```
+
+### Important Notes on Summary
+
+- The summary includes:
+   - Total number of applications (active + archived)
+   - Number of active applications
+   - Number of archived applications
+- The **Status Overview** and **Upcoming Deadlines** sections consider **only active applications**.
+- Archived applications are excluded from deadline tracking and status summaries.
+
+---
+
 ## 10. Archive an application: `archive`
 
 Marks an application as archived without deleting it from the tracker.
@@ -484,6 +551,8 @@ Archives application 2.
 Nice! I've archived application 2:
 [Archived] Meta - Data Analyst (Deadline: 2026-05-25, Contact: Bob, Status: Pending)
 ```
+- The `INDEX` refers to the position shown in the **active applications list (`list`)**.
+- After archiving an application, the remaining applications will be reindexed in the `list` view.
 
 ### Notes
 
@@ -529,6 +598,8 @@ Meta - Data Analyst (Deadline: 2026-05-25, Contact: Bob, Status: Pending)
 - The application index must be greater than 0.
 - The application must exist in the list.
 - The application must already be archived.
+- The `INDEX` refers to the position shown in the **archived applications list (`listarchived`)**, not the active list.
+- After unarchiving an application, the archived list will be reindexed accordingly.
 
 ---
 
@@ -564,6 +635,13 @@ If there are no archived applications:
 ```
 You have no archived applications.
 ```
+### Important Notes on Archived List
+
+- The `listarchived` command displays **only archived applications**.
+- Indices shown here are used for the `unarchive` command.
+
+---
+
 ## 13. Exit the application: `bye`
 
 Closes InternTrack.
