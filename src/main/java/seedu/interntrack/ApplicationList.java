@@ -96,9 +96,9 @@ public class ApplicationList {
         for (Application existingApp : userApplications) {
             if (existingApp != application && tempApp.equals(existingApp)) {
                 logger.warning("Edit failed: This would result in a duplicate application.");
-                throw new InternTrackException(
-                        "Edit failed: This change would result in a duplicate application. "
-                                + "(Note: The duplicate might be hidden in your archive. Use 'listarchived' to check!)");
+                throw new InternTrackException("Edit failed: This change would result in a duplicate application. "
+                        + "(Note: The duplicate might be hidden in your archive. "
+                        + "Use 'listarchived' to check!)");
             }
         }
 

@@ -318,7 +318,8 @@ public class Parser {
         if (!criterias[0].equals(SORT_CRITERIA1) && !criterias[0].equals(SORT_CRITERIA2)
                 && !criterias[0].equals(SORT_CRITERIA3) && !criterias[0].equals(SORT_CRITERIA4)
                 && !criterias[0].equals(SORT_CRITERIA5)) {
-            throw new InternTrackException("Wrong sort criteria, use either these: ROLE, COMPANY, DEADLINE, CONTACT, STATUS");        }
+            throw new InternTrackException("Wrong sort criteria, use either these: ROLE, COMPANY, DEADLINE, " +
+                    "CONTACT, STATUS");        }
         if (criterias.length == 1) { //No other flags
             return criterias;
         }
