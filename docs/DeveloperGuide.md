@@ -1307,11 +1307,11 @@ interface.
 
 ### Non-Functional Requirements
 
-1. The application should run on any system that supports Java 17 or above.
-2. The application should store application data locally in a text file.
-3. The system should respond to user commands within one second for typical usage.
-4. The application should provide clear error messages for invalid inputs.
-5. The application should support command-line usage without requiring a graphical interface.
+1. The application should run on any mainstream OS (Windows, macOS, and Linux) that supports Java 17 or above.
+2. The application should persist data locally in a human-readable text file.
+3. The system should respond to user commands within one second for data file of up to 1,000 entries.
+4. The application should provide clear error messages for invalid inputs, informing users what the valid inputs are.
+5. The application should be fully operable via command-line usage without requiring a graphical interface.
 
 ---
 
