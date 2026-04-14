@@ -1,0 +1,26 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Parser {
+    +createApplication(input: String): Application
+    +parseEditIndex(input: String): int
+    +parseEditDetails(input: String): EditDetails
+    +parseFilterCriteria(input: String): FilterCriteria
+    +parseDeleteIndex(input: String): int
+    +parseArchiveIndex(input: String): int
+    +parseUnarchiveIndex(input: String): int
+    +parseSortCriteria(input: String): String[]
+    +parseRemindDays(input: String): int
+}
+
+class Application
+class EditDetails
+class FilterCriteria
+class InternTrackException
+
+Parser ..> Application : creates
+Parser ..> EditDetails : creates
+Parser ..> FilterCriteria : creates
+Parser ..> InternTrackException : throws
+
+@enduml

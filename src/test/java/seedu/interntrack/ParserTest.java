@@ -68,7 +68,9 @@ public class ParserTest {
     @Test
     public void parse_invalidDateFormat_throwsException() {
         String input = "add c/Google r/Intern d/30-11-2023";
-        verifyParserExceptionThrown(input, "Date must be in YYYY-MM-DD format.");
+        String expectedMessage = "Date must be in YYYY-MM-DD format."
+                + "Invalid date: 30-11-2023 does not exist (this month has 30 days).";
+        verifyParserExceptionThrown(input, expectedMessage);
     }
 
     @Test

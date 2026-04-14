@@ -1,0 +1,39 @@
+@startuml
+hide footbox
+
+participant ":InternTrack" as InternTrack
+participant ":Parser" as Parser
+participant ":ApplicationList" as ApplicationList
+participant ":Storage" as Storage
+participant ":Ui" as Ui
+
+[-> InternTrack : handleCommand("archive ...", userApplications, undoHistory)
+activate InternTrack
+
+InternTrack -> InternTrack : handleArchiveCommand(line, userApplications, undoHistory)
+
+InternTrack -> Parser : parseArchiveIndex(line)
+activate Parser
+Parser --> InternTrack : index
+deactivate Parser
+
+InternTrack -> InternTrack : saveStateForUndo(userApplications, undoHistory)
+
+InternTrack -> ApplicationList : archiveApplication(userApplications, index)
+activate ApplicationList
+ApplicationList --> InternTrack : archivedApplication
+deactivate ApplicationList
+
+InternTrack -> Storage : saveApplications(userApplications)
+activate Storage
+Storage --> InternTrack
+deactivate Storage
+
+InternTrack -> Ui : printArchiveApplication(archivedApplication, index)
+activate Ui
+Ui --> InternTrack
+deactivate Ui
+
+[<-- InternTrack
+deactivate InternTrack
+@enduml

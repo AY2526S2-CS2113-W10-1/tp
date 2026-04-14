@@ -50,7 +50,9 @@ public class ApplicationListTest {
                 InternTrackException.class,
                 () -> ApplicationList.addApplication(testList, testLine)
         );
-        assertEquals("Date must be in YYYY-MM-DD format.", exception.getMessage());
+        String expectedMessage = "Date must be in YYYY-MM-DD format."
+                + "Invalid month: 30. Month must be between 1 and 12.";
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test

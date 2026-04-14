@@ -1,9 +1,9 @@
 @startuml
 actor User
-participant ":Ui" as  Ui
-participant ":InternTrack" as InternTrack
-participant ":Parser" as Parser
-participant ":ApplicationList" as ApplicationList
+participant "Ui" as  Ui<<class>>
+participant "InternTrack" as InternTrack<<class>>
+participant "Parser" as Parser<<class>>
+participant "ApplicationList" as ApplicationList<<class>>
 
 User -> Ui : sort by/CRITERIA [FLAG]
 Ui -> InternTrack : handleSortCommand()

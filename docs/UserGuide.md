@@ -6,16 +6,19 @@
 2. [Quick Start](#quick-start)
 3. [Features](#features)
 4. [Commands](#commands)
-   - [1. Add a new internship application: `add`](#1-add-a-new-internship-application-add)
-   - [2. List all applications: `list`](#2-list-all-applications-list)
-   - [3. Edit an application: `edit`](#3-edit-an-application-edit)
-   - [4. Delete an application: `delete`](#4-delete-an-application-delete)
-   - [5. Filter applications: `filter`](#5-filter-applications-filter)
-   - [6. View applications with upcoming deadlines: `remind`](#6-view-applications-with-upcoming-deadlines-remind)
-   - [7. Sort applications: `sort`](#7-sort-applications-sort)
-   - [8. Undo the most recent change: `undo`](#8-undo-the-most-recent-change-undo)
-   - [9. Get summary: `summary`](#9-get-summary-summary)
-   - [10. Exit the application: `bye`](#10-exit-the-application-bye)
+    - [1. Add a new internship application: `add`](#1-add-a-new-internship-application-add)
+    - [2. List all applications: `list`](#2-list-all-applications-list)
+    - [3. Edit an application: `edit`](#3-edit-an-application-edit)
+    - [4. Delete an application: `delete`](#4-delete-an-application-delete)
+    - [5. Filter applications: `filter`](#5-filter-applications-filter)
+    - [6. View applications with upcoming deadlines: `remind`](#6-view-applications-with-upcoming-deadlines-remind)
+    - [7. Sort applications: `sort`](#7-sort-applications-sort)
+    - [8. Undo the most recent change: `undo`](#8-undo-the-most-recent-change-undo)
+    - [9. Get summary: `summary`](#9-get-summary-summary)
+    - [10. Archive an application: `archive`](#10-archive-an-application-archive)
+    - [11. Restore an archived application: `unarchive`](#11-restore-an-archived-application-unarchive)
+    - [12. View archived applications: `listarchived`](#12-view-archived-applications-listarchived)
+    - [13. Exit the application: `bye`](#13-exit-the-application-bye)
 5. [FAQ](#faq)
 6. [Command Summary](#command-summary)
 
@@ -57,14 +60,42 @@ InternTrack enforces strict command formats for certain commands such as `archiv
 
 - Extra unexpected text after a valid command will result in an error.
 - For example:
-   - `archive 1` is valid
-   - `archive 1 extra` is invalid
+    - `archive 1` is valid
+    - `archive 1 extra` is invalid
 - However, additional spaces are allowed:
-   - `archive    1` is valid
+    - `archive    1` is valid
 
 ### Important: Restricted Characters
 
 * The pipe character `|` is **not allowed** in any text input fields (company, role, contact, deadline). Using this character will result in an error message. Please use alternative characters such as `/`, `&`, or `-` instead.
+
+### Date Format Constraints
+
+- All dates must be in **YYYY-MM-DD** format (ISO-8601 standard). The date must be a valid calendar date.
+- Invalid dates such as `2025-13-45` (month 13 does not exist) or `2025-02-30` (February 30 does not exist) will be rejected with an error message.
+- **Past dates are allowed**: You can add or edit applications with deadlines in the past. This is intentional, as the application allows you to track historical applications. However, the `remind` command filters out past deadlines to focus on active opportunities.
+
+### Whitespace Handling
+
+When you save an application, InternTrack automatically normalizes whitespace in all text fields (company name, role, contact, status):
+
+**What happens:**
+
+- Multiple consecutive spaces, tabs, or newlines are collapsed into **single spaces**
+- Leading and trailing whitespace is removed
+
+**Examples:**
+
+- Input: `c/samsung           electronics` → Saved as: `samsung electronics`
+- Input: `c/  Google  Inc  ` → Saved as: `Google Inc`
+- Input: `r/Product    Research` → Saved as: `Product Research`
+
+**What is NOT changed:**
+
+- Single spaces between words are preserved
+- The order and content of words remain unchanged
+
+This normalization applies to all text input fields in add, edit, and filter commands to ensure consistent, clean data storage.
 
 ---
 
@@ -95,6 +126,8 @@ Deadline format
 YYYY-MM-DD
 ```
 
+Constraints: Must be a valid calendar date. Past dates are allowed. Invalid dates (e.g., month 13, February 30) will be rejected.
+
 Examples
 
 ```
@@ -124,8 +157,8 @@ InternTrack automatically detects and prevents duplicate applications from being
 - **Status**: Status is never checked for duplicates since all new applications automatically start as "Pending"
 
 **Important Note on Archived Applications:**
-- Duplicate detection scans your **entire tracker**, including 
-both active and archived applications. 
+- Duplicate detection scans your **entire tracker**, including
+  both active and archived applications.
 - You cannot add a new application if an identical one is hidden in your archive. If your `add` command is rejected as a duplicate but you don't see it in your active list, use the `listarchived` command to locate it.
 
 **Examples of Duplicate Detection:**
@@ -192,7 +225,7 @@ Parameters
 - `INDEX` : Index of the application shown in the list
 - `c/COMPANY` : Updated company name
 - `r/ROLE` : Updated role name
-- `d/DEADLINE` : Updated deadline in `YYYY-MM-DD` format
+- `d/DEADLINE` : Updated deadline in `YYYY-MM-DD` format. Must be a valid calendar date. Past dates are allowed.
 - `ct/CONTACT` : Updated recruiter or HR contact
 - `s/STATUS` : Updated status value
 
@@ -204,9 +237,9 @@ Notes
 - For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or the custom statuses you set.
 - The `INDEX` refers to the position shown in the **active applications list (`list`)**, not the full internal list.
 - Archived applications cannot be edited directly. You must first unarchive them.
-- **Duplicate Protection:** The `edit` command strictly follows 
-the exact same duplicate detection rules as the `add` command. If your proposed edits would cause the application to become a duplicate
-of another existing application (including archived ones), the edit will be safely blocked to protect your data integrity.
+- **Duplicate Protection:** The `edit` command strictly follows
+  the exact same duplicate detection rules as the `add` command. If your proposed edits would cause the application to become a duplicate
+  of another existing application (including archived ones), the edit will be safely blocked to protect your data integrity.
 ```
 edit 2 s/Accepted
 ```
@@ -260,9 +293,9 @@ Noted. I've removed this application.
 - The `delete` command can only remove **active applications**.
 - Archived applications are not affected by `delete`.
 - To delete an archived application:
-   1. Use `listarchived` to locate it
-   2. Use `unarchive INDEX`
-   3. Then use `delete INDEX` from the active list
+    1. Use `listarchived` to locate it
+    2. Use `unarchive INDEX`
+    3. Then use `delete INDEX` from the active list
 
 ---
 
@@ -286,9 +319,9 @@ Notes
 - Text matching for company, role, contact, and status is case-insensitive and matches substrings.
 - For `d/DEADLINE`, InternTrack shows applications with deadlines on or before the specified date.
 - For `s/STATUS`, some default statuses you can think of are `Applied`, `Pending`, `Accepted`, `Rejected` or the custom statuses you set.
-- **Persistent Indexing:** The numbers shown next to the filtered applications represent their actual index 
-in the main active `list`. You do not need to type `list` again; you can immediately use the displayed number 
-for your `edit`, `delete`, or `archive` commands.
+- **Persistent Indexing:** The numbers shown next to the filtered applications represent their actual index
+  in the main active `list`. You do not need to type `list` again; you can immediately use the displayed number
+  for your `edit`, `delete`, or `archive` commands.
 
 Examples:
 
@@ -495,9 +528,9 @@ ____________________________________________________________
 ### Important Notes on Summary
 
 - The summary includes:
-   - Total number of applications (active + archived)
-   - Number of active applications
-   - Number of archived applications
+    - Total number of applications (active + archived)
+    - Number of active applications
+    - Number of archived applications
 - The **Status Overview** and **Upcoming Deadlines** sections consider **only active applications**.
 - Archived applications are excluded from deadline tracking and status summaries.
 
@@ -550,23 +583,23 @@ Nice! I've archived application 2:
 
 Restores an archived application back to its active state.
 
- Format
+Format
 
 ```
 unarchive INDEX
 ```
- 
+
 Parameters
 
 - `INDEX` : Index of the application in the list
 
- Example
+Example
 
 ```
 unarchive 2
 ```
 
- Result
+Result
 
 Restores application 2.
 
@@ -577,7 +610,7 @@ Nice! I've restored application 2:
 Meta - Data Analyst (Deadline: 2026-05-25, Contact: Bob, Status: Pending)
 ```
 
- Notes
+Notes
 
 - The application index must be greater than 0.
 - The application must exist in the list.
@@ -591,19 +624,19 @@ Meta - Data Analyst (Deadline: 2026-05-25, Contact: Bob, Status: Pending)
 
 Displays all archived applications currently stored in the tracker.
 
- Format
+Format
 
 ```
 listarchived
 ```
 
- Example
+Example
 
 ```
 listarchived
 ```
 
- Result
+Result
 
 Shows all archived applications.
 
