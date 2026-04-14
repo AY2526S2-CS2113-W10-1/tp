@@ -65,6 +65,27 @@ InternTrack enforces strict command formats for certain commands such as `archiv
 ### Important: Restricted Characters
 
 * The pipe character `|` is **not allowed** in any text input fields (company, role, contact, deadline). Using this character will result in an error message. Please use alternative characters such as `/`, `&`, or `-` instead.
+### Whitespace Handling
+
+When you save an application, InternTrack automatically normalizes whitespace in all text fields (company name, role, contact, status):
+
+**What happens:**
+
+- Multiple consecutive spaces, tabs, or newlines are collapsed into **single spaces**
+- Leading and trailing whitespace is removed
+
+**Examples:**
+
+- Input: `c/samsung           electronics` → Saved as: `samsung electronics`
+- Input: `c/  Google  Inc  ` → Saved as: `Google Inc`
+- Input: `r/Product    Research` → Saved as: `Product Research`
+
+**What is NOT changed:**
+
+- Single spaces between words are preserved
+- The order and content of words remain unchanged
+
+This normalization applies to all text input fields in add, edit, and filter commands to ensure consistent, clean data storage.
 
 ---
 

@@ -391,14 +391,17 @@ public class Parser {
 
     /**
      * Parses a required text value by trimming whitespace and ensuring it is not empty.
+     * Also collapses multiple consecutive whitespaces into single spaces.
      *
      * @param value        The raw text value to parse.
      * @param emptyMessage The error message to throw if the value is empty.
-     * @return The trimmed text value.
+     * @return The trimmed and normalized text value.
      * @throws InternTrackException If the value is empty or contains the pipe character.
      */
     private static String parseRequiredTextValue(String value, String emptyMessage) throws InternTrackException {
         String trimmedValue = value.trim();
+        trimmedValue = trimmedValue.replaceAll("\\s+", " ");
+
         if (trimmedValue.isEmpty()) {
             logger.log(Level.WARNING, "Empty value provided for a prefixed field");
             throw new InternTrackException(emptyMessage);
