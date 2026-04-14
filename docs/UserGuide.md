@@ -36,7 +36,7 @@ InternTrack is designed for students who prefer fast keyboard-based workflows.
 
 1. Ensure that you have **Java 17 or above** installed.
 2. Download the latest version of `InternTrack` from  
-   https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v1.0
+   https://github.com/AY2526S2-CS2113-W10-1/tp/releases/tag/v2.1
 3. Open a terminal in the folder containing the jar file.
 4. Run the application using:
 ```
