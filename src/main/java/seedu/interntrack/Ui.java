@@ -245,6 +245,20 @@ public class Ui {
     }
 
     /**
+     * Prints a warning when the save file cannot be accessed.
+     */
+    public static void printStorageWarning() {
+        System.out.println("Warning: Unable to open save file, your changes may be lost. Please retry");
+    }
+
+    /**
+     * Prints a warning when saving data to disk fails.
+     */
+    public static void printSaveFailureWarning() {
+        System.out.println("Warning: Failed to save data to disk. Your changes may be lost.");
+    }
+
+    /**
      * Prints applications with upcoming deadlines within the specified number of days.
      *
      * @param upcomingApplications The list of applications with upcoming deadlines.

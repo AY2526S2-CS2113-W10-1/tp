@@ -516,9 +516,6 @@ The `hasUpdates()` method acts as a guard against no-op edit commands.
 
 ## Implementation
 
-
-## Application Initialization: Loading Persisted Data
-
 Before any user interaction occurs, the application must load previously saved data from disk. This initialization step
 is critical for demonstrating how the storage mechanism works bidirectionally (save and load).
 
@@ -805,7 +802,7 @@ The `remind` command helps users stay on top of upcoming application deadlines b
 The remind feature is facilitated by the following key components:
 
 - **Parser** (`Parser#parseRemindDays()`) — Parses and validates the number of days from user input
-- **ApplicationList** (`ApplicationList#filterApplicationsOnOrBefore()`) — Filters applications by deadline
+- **ApplicationList** (`ApplicationList#filterApplicationsByDaysAhead()`) — Filters applications with deadlines within N days from today
 - **Ui** (`Ui#printUpcomingDeadlines()`) — Displays the filtered applications
 - **InternTrack** (`InternTrack#handleRemindCommand()`) — Orchestrates the remind command workflow
 
@@ -820,8 +817,8 @@ Given below is an example usage scenario and how the remind feature behaves:
 **Step 3:** `InternTrack#handleRemindCommand()` is invoked:
 1. Calls `Parser#parseRemindDays("remind 5")` which returns `5`
 2. Calculates cutoff date: `LocalDate.now().plusDays(5)` = Apr 6
-3. Calls `ApplicationList#filterApplicationsOnOrBefore(userApplications, Apr 6)` to filter the list
-4. For each application, checks: `if (deadline != null && !deadline.isAfter(Apr 6))` to include it
+3. Calls `ApplicationList#filterApplicationsByDaysAhead(userApplications, 5)` to filter the list
+4. For each application, checks: if not archived AND deadline is not null AND deadline is not before today (Apr 1) AND deadline is not after cutoff (Apr 6), then include it
 5. Returns filtered list: Google (Apr 3) and Microsoft (Apr 5); excludes Amazon (Apr 15)
 
 **Step 4:** `Ui#printUpcomingDeadlines()` displays the result:

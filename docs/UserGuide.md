@@ -15,7 +15,10 @@
    - [7. Sort applications: `sort`](#7-sort-applications-sort)
    - [8. Undo the most recent change: `undo`](#8-undo-the-most-recent-change-undo)
    - [9. Get summary: `summary`](#9-get-summary-summary)
-   - [10. Exit the application: `bye`](#10-exit-the-application-bye)
+   - [10. Archive an application: `archive`](#10-archive-an-application-archive)
+   - [11. Restore an archived application: `unarchive`](#11-restore-an-archived-application-unarchive)
+   - [12. View archived applications: `listarchived`](#12-view-archived-applications-listarchived)
+   - [13. Exit the application: `bye`](#13-exit-the-application-bye)
 5. [FAQ](#faq)
 6. [Command Summary](#command-summary)
 
