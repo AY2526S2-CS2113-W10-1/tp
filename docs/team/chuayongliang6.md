@@ -51,4 +51,4 @@ InternTrack streamlines the internship application chaos. It provides a fast CLI
 ### Contributions Beyond the Project Team
 
 **Evidence of Helping Others:**
-Gave comments for other group's sequence diagrams for their tP: https://github.com/NUS-CS2113-AY2526-S2/tp/pull/6
+Gave comments for other group's sequence diagrams for their tP: [Link to PR](https://github.com/NUS-CS2113-AY2526-S2/tp/pull/6)
