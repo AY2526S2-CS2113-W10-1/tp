@@ -207,7 +207,7 @@ public class InternTrack {
             throws InternTrackException {
         FilterCriteria criteria = Parser.parseFilterCriteria(line);
         ArrayList<Application> filteredApplications = ApplicationList.filterApplications(userApplications, criteria);
-        Ui.printFilteredApplications(filteredApplications, criteria);
+        Ui.printFilteredApplications(filteredApplications, criteria, userApplications);
     }
 
     /**
@@ -220,11 +220,8 @@ public class InternTrack {
     private static void handleSortCommand(String line, ArrayList<Application> userApplications)
             throws InternTrackException {
         String[] criteria = Parser.parseSortCriteria(line);
-
-        assert criteria.length > 0 : "There must be some sorting criteria";
-        assert criteria.length < 4 : "There are at most 3 criteria";
         ArrayList<Application> sortedApps = ApplicationList.sortApplicationsByCriteria(userApplications, criteria);
-        Ui.printSortedApplications(sortedApps, criteria);
+        Ui.printSortedApplications(sortedApps, criteria, userApplications);
     }
 
     /**
@@ -266,7 +263,7 @@ public class InternTrack {
                 ApplicationList.filterApplicationsByDaysAhead(userApplications, numDays);
         LocalDate remindDate = LocalDate.now().plusDays(numDays);
         assert remindDate.isAfter(LocalDate.now()) : "Remind date should be in the future";
-        Ui.printUpcomingDeadlines(filteredApplications, numDays, remindDate);
+        Ui.printUpcomingDeadlines(filteredApplications, numDays, remindDate, userApplications);
     }
 
     /**

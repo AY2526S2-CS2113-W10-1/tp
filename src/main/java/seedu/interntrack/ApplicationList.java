@@ -50,7 +50,7 @@ public class ApplicationList {
             logger.log(Level.WARNING, "Duplicate application rejected: " + newApplication);
             throw new InternTrackException(
                     "This internship application already exists in your list. "
-                            + "Please check your applications before adding a new entry.");
+                            + "(Note: It might be hidden in your archive. Use 'listarchived' to check!)");
         }
 
         int sizeBefore = userApplications.size();
@@ -79,6 +79,28 @@ public class ApplicationList {
         }
 
         Application application = getActiveApplicationByIndex(userApplications, index);
+
+        Application tempApp = new Application(application);
+
+        if (editDetails.getCompany() != null) {
+            tempApp.setCompany(editDetails.getCompany());
+        }
+        if (editDetails.getRole() != null) {
+            tempApp.setRole(editDetails.getRole());
+        }
+        if (editDetails.getDeadline() != null) {
+            tempApp.setDeadline(editDetails.getDeadline());
+        }
+
+        // 2. Check if this modified copy matches any OTHER application in the list
+        for (Application existingApp : userApplications) {
+            if (existingApp != application && tempApp.equals(existingApp)) {
+                logger.warning("Edit failed: This would result in a duplicate application.");
+                throw new InternTrackException(
+                        "Edit failed: This change would result in a duplicate application. "
+                                + "(Note: The duplicate might be hidden in your archive. Use 'listarchived' to check!)");
+            }
+        }
 
         if (editDetails.getCompany() != null) {
             application.setCompany(editDetails.getCompany());
@@ -617,6 +639,19 @@ public class ApplicationList {
         Application application = archivedApplications.get(index - 1);
         assert application != null : "Archived application should not be null after index validation";
         return application;
+    }
+
+    /**
+     * Finds the 1-based index of an application within the active applications list.
+     *
+     * @param userApplications The full list of applications.
+     * @param target The application to find.
+     * @return The 1-based index, or -1 if not found.
+     */
+    public static int getActiveIndex(ArrayList<Application> userApplications, Application target) {
+        ArrayList<Application> activeApps = getActiveApplications(userApplications);
+        int index = activeApps.indexOf(target);
+        return (index == -1) ? -1 : (index + 1);
     }
 
     /**

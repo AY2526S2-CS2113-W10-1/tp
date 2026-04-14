@@ -147,7 +147,8 @@ public class Ui {
      * @param criteria             The criterion used for filtering.
      */
     public static void printFilteredApplications(ArrayList<Application> filteredApplications,
-                                                 FilterCriteria criteria) {
+                                                 FilterCriteria criteria,
+                                                 ArrayList<Application> fullList) {
         String filterSummary = criteria.getSummary();
         if (filteredApplications.isEmpty()) {
             System.out.println("No applications found matching " + filterSummary + ".");
@@ -157,9 +158,11 @@ public class Ui {
         System.out.println("You have " + applicationCount
                 + ((applicationCount > 1) ? " applications" : " application")
                 + " matching " + filterSummary + ".");
+
         for (int i = 0; i < applicationCount; i++) {
             Application app = filteredApplications.get(i);
-            printApplication(app, i);
+            int realIndex = ApplicationList.getActiveIndex(fullList, app);
+            printApplication(app, realIndex - 1);
         }
     }
 
@@ -169,7 +172,9 @@ public class Ui {
      * @param sortedApplications The sorted list to display.
      * @param criterias          The criteria used for sorting.
      */
-    public static void printSortedApplications(ArrayList<Application> sortedApplications, String[] criterias) {
+    public static void printSortedApplications(ArrayList<Application> sortedApplications,
+                                               String[] criterias,
+                                               ArrayList<Application> fullList) {
         if (sortedApplications.isEmpty()) {
             System.out.println("No applications found after sorting");
             return;
@@ -194,12 +199,13 @@ public class Ui {
         System.out.println("The application list has been sorted by " + criteria
                 + " in " + (isDesc ? "descending order" : "ascending order")
                 + (isNonnull ? " with null entries removed." : "."));
+
         for (int i = 0; i < applicationCount; i++) {
             Application app = sortedApplications.get(i);
-            printApplication(app, i);
+            int realIndex = ApplicationList.getActiveIndex(fullList, app);
+            printApplication(app, realIndex - 1);
         }
     }
-
     /**
      * Prints confirmation after editing an application.
      *
@@ -227,7 +233,7 @@ public class Ui {
      */
     public static void printDeleteApplication(Application application, int index) {
         System.out.println("Noted. I've removed this application:");
-        System.out.println("  " + (index + 1) + ". " + application.toString());
+        System.out.println("  " + (index) + ". " + application.toString());
     }
 
     /**
@@ -252,7 +258,8 @@ public class Ui {
      * @param remindDate           The specific cutoff date for the reminder.
      */
     public static void printUpcomingDeadlines(ArrayList<Application> upcomingApplications,
-                                              int numDays, LocalDate remindDate) {
+                                              int numDays, LocalDate remindDate,
+                                              ArrayList<Application> fullList) {
         if (upcomingApplications.isEmpty()) {
             System.out.println("No applications due in the next " + numDays + " days.");
             return;
@@ -262,9 +269,11 @@ public class Ui {
         String dateRange = " (up to " + remindDate.toString() + "):";
         System.out.println("You have " + applicationCount + applicationLabel
                 + " due in the next " + numDays + " days" + dateRange);
+
         for (int i = 0; i < applicationCount; i++) {
             Application app = upcomingApplications.get(i);
-            printApplication(app, i);
+            int realIndex = ApplicationList.getActiveIndex(fullList, app);
+            printApplication(app, realIndex - 1);
         }
     }
 }
